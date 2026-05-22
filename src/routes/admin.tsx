@@ -3,12 +3,23 @@ import { Settings } from 'lucide-react'
 import { PageShell } from '~/components/PageShell'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
+import { useAuth } from '~/lib/auth-context'
 
 export const Route = createFileRoute('/admin')({
   component: AdminLayout,
 })
 
 function AdminLayout() {
+  const { isReady, isAuthenticated } = useAuth()
+
+  if (!isReady) {
+    return null
+  }
+
+  if (!isAuthenticated) {
+    throw new Error('You must be signed in to access the admin area.')
+  }
+
   return (
     <PageShell className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
