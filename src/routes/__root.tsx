@@ -12,7 +12,7 @@ import { AppFooter } from '~/components/AppFooter'
 import { AppHeader } from '~/components/AppHeader'
 import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary'
 import { PostHogErrorFallback } from '~/components/PostHogErrorFallback'
-import { NotFound } from '~/components/NotFound'
+import { RootNotFound } from '~/components/NotFound'
 import { CatalogGate } from '~/components/CatalogGate'
 import { CartProvider } from '~/lib/cart'
 import { CatalogProvider } from '~/lib/catalog-context'
@@ -70,7 +70,7 @@ export const Route = createRootRoute({
     ],
   }),
   errorComponent: DefaultCatchBoundary,
-  notFoundComponent: () => <NotFound />,
+  notFoundComponent: RootNotFound,
   shellComponent: RootDocument,
 })
 

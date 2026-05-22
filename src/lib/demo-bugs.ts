@@ -5,6 +5,16 @@
 
 export const DEMO_CART_MAX_UNITS = 3
 
+export class DemoGlobalNotFoundError extends Error {
+  readonly pathname: string
+
+  constructor(pathname: string) {
+    super(`Page not found: ${pathname}`)
+    this.name = 'DemoGlobalNotFoundError'
+    this.pathname = pathname
+  }
+}
+
 export class DemoCartCapacityError extends Error {
   readonly unitCount: number
 
