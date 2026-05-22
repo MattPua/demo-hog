@@ -9,12 +9,12 @@ import {
 } from 'react'
 import {
   ensureCatalogSeeded,
-  filterProducts,
   getAllProducts,
   getCategories,
   getProductById as getProductByIdFromDb,
   type Product,
 } from '~/lib/catalog-db'
+import { buggedFilterProducts } from '~/lib/demo-bugs'
 
 type CatalogStatus = 'loading' | 'ready' | 'error'
 
@@ -73,7 +73,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   )
 
   const searchProducts = useCallback(
-    (query: string) => filterProducts(products, query),
+    (query: string) => buggedFilterProducts(products, query),
     [products],
   )
 

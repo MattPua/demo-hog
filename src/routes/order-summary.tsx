@@ -18,7 +18,7 @@ function OrderSummaryPage() {
   const posthog = usePostHog()
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { linesWithProducts, itemCount, subtotal, clearCart } = useCart()
+  const { linesWithProducts, itemCount, subtotal, promoCode, promoDiscount, displayTotal, checkoutTotal, clearCart } = useCart()
   const [email, setEmail] = useState(user?.email ?? '')
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function OrderSummaryPage() {
   const [orderId, setOrderId] = useState<string | null>(null)
 
   const shipping = 0
-  const total = subtotal + shipping
+  const total = checkoutTotal + shipping
 
   if (linesWithProducts.length === 0 && status !== 'success') {
     return (
@@ -73,6 +73,9 @@ function OrderSummaryPage() {
             line_total: line.product.price * line.quantity,
           })),
           subtotal,
+          promo_code: promoCode ?? undefined,
+          promo_discount: promoDiscount,
+          display_total: displayTotal,
           shipping,
           total,
           item_count: itemCount,
@@ -164,13 +167,19 @@ function OrderSummaryPage() {
           <span className="text-muted-foreground">Subtotal</span>
           <span>{formatPrice(subtotal)}</span>
         </div>
+        {promoDiscount > 0 ? (
+          <div className="flex justify-between text-emerald-700 dark:text-emerald-300">
+            <span>Promo {promoCode}</span>
+            <span>-{formatPrice(promoDiscount)}</span>
+          </div>
+        ) : null}
         <div className="flex justify-between">
           <span className="text-muted-foreground">Shipping</span>
           <span>Free (demo)</span>
         </div>
         <div className="flex justify-between border-t pt-2 text-base font-semibold">
           <span>Total</span>
-          <span>{formatPrice(total)}</span>
+          <span>{formatPrice(displayTotal + shipping)}</span>
         </div>
       </div>
 
@@ -218,7 +227,7 @@ function OrderSummaryPage() {
               Placing order…
             </>
           ) : (
-            `Place order · ${formatPrice(total)}`
+            `Place order · ${formatPrice(displayTotal + shipping)}`
           )}
         </Button>
       </div>

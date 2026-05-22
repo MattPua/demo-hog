@@ -4,14 +4,19 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
+import { useAuth } from '~/lib/auth-context'
 import { useCatalog } from '~/lib/catalog-context'
 import { getCartLines, saveCartLines, type CartLine } from '~/lib/cart-db'
 import {
   DEMO_CART_MAX_UNITS,
+  buggedCartAfterSignIn,
   buggedCartSubtotal,
+  buggedCheckoutTotal,
+  calculatePromoDiscount,
   getCartUnitCount,
   shouldBlockQuantityIncrease,
   wouldExceedCartCapacity,
@@ -32,6 +37,12 @@ type CartContextValue = {
   clearCart: () => void
   itemCount: number
   subtotal: number
+  promoCode: string | null
+  promoDiscount: number
+  displayTotal: number
+  checkoutTotal: number
+  applyPromo: (code: string) => { error?: string }
+  clearPromo: () => void
   linesWithProducts: CartLineWithProduct[]
 }
 
@@ -42,9 +53,12 @@ function lineKey(productId: string, size?: string) {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { user, isReady: authReady } = useAuth()
   const { getProductById, status: catalogStatus } = useCatalog()
   const [lines, setLines] = useState<CartLine[]>([])
   const [ready, setReady] = useState(false)
+  const [promoCode, setPromoCode] = useState<string | null>(null)
+  const prevUserRef = useRef<typeof user | undefined>(undefined)
 
   useEffect(() => {
     if (catalogStatus !== 'ready') return
@@ -68,6 +82,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!ready) return
     saveCartLines(lines).catch(() => {})
   }, [lines, ready])
+
+  // Intentional demo bug: signing in drops the first cart line.
+  useEffect(() => {
+    if (!authReady || !ready) return
+
+    if (prevUserRef.current === undefined) {
+      prevUserRef.current = user
+      return
+    }
+
+    const wasLoggedOut = prevUserRef.current === null
+    prevUserRef.current = user
+
+    if (wasLoggedOut && user !== null) {
+      setLines((prev) => buggedCartAfterSignIn(prev))
+    }
+  }, [user, authReady, ready])
 
   const addItem = useCallback(
     (productId: string, quantity: number, size?: string) => {
@@ -127,7 +158,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [removeItem],
   )
 
-  const clearCart = useCallback(() => setLines([]), [])
+  const clearCart = useCallback(() => {
+    setLines([])
+    setPromoCode(null)
+  }, [])
+
+  const clearPromo = useCallback(() => {
+    setPromoCode(null)
+  }, [])
 
   const linesWithProducts = useMemo(
     () =>
@@ -151,6 +189,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [linesWithProducts, itemCount],
   )
 
+  const promoDiscount = useMemo(
+    () => calculatePromoDiscount(subtotal, promoCode),
+    [subtotal, promoCode],
+  )
+
+  const displayTotal = useMemo(
+    () => Math.max(0, subtotal - promoDiscount),
+    [subtotal, promoDiscount],
+  )
+
+  const checkoutTotal = useMemo(
+    () => buggedCheckoutTotal(subtotal, promoDiscount),
+    [subtotal, promoDiscount],
+  )
+
+  const applyPromo = useCallback(
+    (code: string) => {
+      const trimmed = code.trim()
+      if (!trimmed) {
+        return { error: 'Enter a promo code.' }
+      }
+
+      const discount = calculatePromoDiscount(subtotal, trimmed)
+      if (discount <= 0) {
+        return { error: 'That promo code is not valid.' }
+      }
+
+      setPromoCode(trimmed.toUpperCase())
+      return {}
+    },
+    [subtotal],
+  )
+
   const cartAtCapacity = itemCount >= DEMO_CART_MAX_UNITS
 
   const value = useMemo(
@@ -164,6 +235,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clearCart,
       itemCount,
       subtotal,
+      promoCode,
+      promoDiscount,
+      displayTotal,
+      checkoutTotal,
+      applyPromo,
+      clearPromo,
       linesWithProducts,
     }),
     [
@@ -176,6 +253,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clearCart,
       itemCount,
       subtotal,
+      promoCode,
+      promoDiscount,
+      displayTotal,
+      checkoutTotal,
+      applyPromo,
+      clearPromo,
       linesWithProducts,
     ],
   )

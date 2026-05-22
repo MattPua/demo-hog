@@ -3,7 +3,11 @@
  * Remove or disable when you want a fully working storefront.
  */
 
+import type { CartLine } from '~/lib/cart-db'
+import type { Product } from '~/lib/catalog-db'
+
 export const DEMO_CART_MAX_UNITS = 3
+export const DEMO_PROMO_CODE = 'HEDGE10'
 
 export class DemoGlobalNotFoundError extends Error {
   readonly pathname: string
@@ -113,4 +117,55 @@ export function assertAdminCanCreateProduct(
   if (productCount >= DEMO_MAX_CATALOG_PRODUCTS) {
     throw new DemoAdminCatalogError(productCount, productId)
   }
+}
+
+/**
+ * Search bug: multi-word queries only match the last token.
+ * e.g. "forager hoodie" searches for "hoodie" and misses name-only matches.
+ */
+export function buggedFilterProducts(
+  products: Product[],
+  query: string,
+): Product[] {
+  const trimmed = query.trim()
+  if (!trimmed) return products
+
+  const segments = trimmed.split(/\s+/)
+  const q = (segments.length > 1 ? segments.at(-1)! : trimmed).toLowerCase()
+
+  return products.filter((product) => {
+    const haystack = [
+      product.name,
+      product.description,
+      product.category,
+      ...product.tags,
+    ]
+      .join(' ')
+      .toLowerCase()
+    return haystack.includes(q)
+  })
+}
+
+/** Auth bug: first cart line is dropped when a guest session signs in. */
+export function buggedCartAfterSignIn(lines: CartLine[]): CartLine[] {
+  if (lines.length < 2) return lines
+  return lines.slice(1)
+}
+
+export function calculatePromoDiscount(
+  subtotal: number,
+  code: string | null,
+): number {
+  if (code?.trim().toUpperCase() !== DEMO_PROMO_CODE) return 0
+  return Math.round(subtotal * 0.1 * 100) / 100
+}
+
+/**
+ * Checkout bug: promo discounts appear in the UI but are not sent to the server.
+ */
+export function buggedCheckoutTotal(
+  subtotal: number,
+  _promoDiscount: number,
+): number {
+  return subtotal
 }

@@ -1,10 +1,9 @@
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePostHog } from '@posthog/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { CartCelebration } from '~/components/demo/CartCelebration'
-import { DecoyButton } from '~/components/demo/DecoyButton'
 import { TrustBadges } from '~/components/demo/TrustBadges'
 import { PageShell } from '~/components/PageShell'
 import { Button } from '~/components/ui/button'
@@ -14,7 +13,7 @@ import {
   captureProductRemovedFromCart,
 } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
-import { assertCartCapacity } from '~/lib/demo-bugs'
+import { assertCartCapacity, DEMO_PROMO_CODE } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 
 export const Route = createFileRoute('/cart')({
@@ -28,9 +27,16 @@ function CartPage() {
     linesWithProducts,
     itemCount,
     subtotal,
+    promoCode,
+    promoDiscount,
+    displayTotal,
+    applyPromo,
+    clearPromo,
     updateQuantity,
     removeItem,
   } = useCart()
+  const [promoInput, setPromoInput] = useState('')
+  const [promoError, setPromoError] = useState<string | null>(null)
 
   useEffect(() => {
     captureCartViewed(posthog, subtotal, itemCount)
@@ -40,8 +46,16 @@ function CartPage() {
   assertCartCapacity(itemCount)
 
   function handleCheckout() {
-    captureCheckoutStarted(posthog, subtotal, itemCount)
+    captureCheckoutStarted(posthog, displayTotal, itemCount)
     navigate({ to: '/order-summary' })
+  }
+
+  function handleApplyPromo() {
+    setPromoError(null)
+    const result = applyPromo(promoInput)
+    if (result.error) {
+      setPromoError(result.error)
+    }
   }
 
   if (linesWithProducts.length === 0) {
@@ -80,13 +94,33 @@ function CartPage() {
         <input
           id="promo-code"
           type="text"
-          placeholder="Promo code"
+          value={promoInput}
+          onChange={(e) => setPromoInput(e.target.value)}
+          placeholder={`Promo code (try ${DEMO_PROMO_CODE})`}
           className="h-9 flex-1 rounded-lg border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
-        <DecoyButton variant="secondary" className="shrink-0">
+        <Button
+          type="button"
+          variant="secondary"
+          className="shrink-0"
+          onClick={handleApplyPromo}
+        >
           Apply
-        </DecoyButton>
+        </Button>
       </div>
+      {promoError ? (
+        <p className="text-sm text-destructive">{promoError}</p>
+      ) : null}
+      {promoCode ? (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <p className="text-emerald-700 dark:text-emerald-300">
+            {promoCode} applied — saved {formatPrice(promoDiscount)}
+          </p>
+          <Button type="button" variant="ghost" size="sm" onClick={clearPromo}>
+            Remove
+          </Button>
+        </div>
+      ) : null}
 
       <ul className="divide-y rounded-xl border">
         {linesWithProducts.map((line) => (
@@ -161,7 +195,12 @@ function CartPage() {
       <div className="flex flex-col items-stretch gap-4 rounded-xl border bg-muted/30 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">Subtotal</p>
-          <p className="text-2xl font-semibold">{formatPrice(subtotal)}</p>
+          <p className="text-2xl font-semibold">{formatPrice(displayTotal)}</p>
+          {promoDiscount > 0 ? (
+            <p className="text-xs text-muted-foreground line-through">
+              {formatPrice(subtotal)} before {promoCode}
+            </p>
+          ) : null}
           <p className="text-xs text-muted-foreground">
             Shipping calculated at checkout (demo: free)
           </p>
