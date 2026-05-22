@@ -1,5 +1,4 @@
-import type { LogAttributes, LogSeverityLevel } from '@posthog/types'
-import type { PostHog } from 'posthog-js'
+import type { LogAttributes, LogSeverityLevel, PostHog } from 'posthog-js'
 import { captureWhenReady } from '~/lib/posthog-capture'
 
 const SERVICE = 'quill-co-storefront'
