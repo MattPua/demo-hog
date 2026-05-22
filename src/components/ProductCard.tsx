@@ -25,7 +25,7 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="flex h-full flex-col overflow-hidden transition-shadow hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-amber-50 to-emerald-50 text-6xl dark:from-amber-950/40 dark:to-emerald-950/40">
         {product.emoji}
       </div>

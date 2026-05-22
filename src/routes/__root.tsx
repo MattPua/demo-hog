@@ -21,6 +21,7 @@ import {
   getPostHogProjectToken,
 } from '~/lib/posthog-client'
 import { AuthProvider } from '~/lib/auth-context'
+import { ThemeProvider } from '~/lib/theme'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
 
@@ -93,24 +94,26 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           >
             <PostHogNavigationTracker />
             <AuthProvider>
-              <CatalogProvider>
-                <CartProvider>
-                  <div className="flex min-h-screen flex-col">
-                    <AppHeader />
-                    <div className="flex min-h-0 flex-1 flex-col">
-                      <CatalogGate>{children}</CatalogGate>
+              <ThemeProvider>
+                <CatalogProvider>
+                  <CartProvider>
+                    <div className="flex min-h-screen flex-col">
+                      <AppHeader />
+                      <div className="flex min-h-0 flex-1 flex-col">
+                        <CatalogGate>{children}</CatalogGate>
+                      </div>
+                      <AppFooter />
                     </div>
-                    <AppFooter />
-                  </div>
-                </CartProvider>
-              </CatalogProvider>
+                  </CartProvider>
+                </CatalogProvider>
+              </ThemeProvider>
             </AuthProvider>
       </PostHogErrorBoundary>
     </>
   )
 
   return (
-    <html>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

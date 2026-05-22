@@ -1,5 +1,6 @@
 import { Link, useMatchRoute } from '@tanstack/react-router'
 import { FreeShippingBanner } from '~/components/demo/FreeShippingBanner'
+import { ThemeToggle } from '~/components/ThemeToggle'
 import type { LucideIcon } from 'lucide-react'
 import {
   Home,
@@ -29,13 +30,11 @@ function NavItem({
   label,
   icon: Icon,
   exact,
-  badge,
 }: {
   to: string
   label: string
   icon: LucideIcon
   exact?: boolean
-  badge?: number
 }) {
   const matchRoute = useMatchRoute()
   const isActive = Boolean(matchRoute({ to, fuzzy: !exact }))
@@ -50,11 +49,6 @@ function NavItem({
       <Link to={to}>
         <Icon className="size-3.5" />
         {label}
-        {badge != null && badge > 0 ? (
-          <span className="ml-1 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
-            {badge}
-          </span>
-        ) : null}
       </Link>
     </Button>
   )
@@ -128,7 +122,7 @@ export function AppHeader() {
           <span className="hidden sm:inline">Quill & Co.</span>
         </Link>
 
-        <Badge variant="secondary" className="hidden md:inline-flex gap-1">
+        <Badge variant="secondary" className="hidden gap-1 md:inline-flex">
           <Package className="size-3" />
           Demo store
         </Badge>
@@ -143,6 +137,8 @@ export function AppHeader() {
               <NavItem key={item.to} {...item} />
             ),
           )}
+
+          <ThemeToggle />
 
           {isAuthenticated && user ? (
             <>
