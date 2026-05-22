@@ -1,0 +1,963 @@
+{
+  "categories": [
+    "Hoodies",
+    "T-Shirts",
+    "Hats",
+    "Socks",
+    "Accessories"
+  ],
+  "products": [
+    {
+      "id": "classic-hedge-hoodie",
+      "name": "Classic Hedgehog Hoodie",
+      "description": "Ultra-soft fleece with an embroidered hedgehog crest. Perfect for chilly garden patrols.",
+      "price": 54.99,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "bestseller"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "spike-back-tee",
+      "name": "Spike Back Graphic Tee",
+      "description": "Ring-spun cotton tee with a minimalist hedgehog silhouette on the back.",
+      "price": 28.99,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "graphic",
+        "cotton"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "garden-night-cap",
+      "name": "Garden Night Beanie",
+      "description": "Ribbed knit beanie in forest green with a subtle quill embroidery.",
+      "price": 22.5,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "beanie",
+        "winter",
+        "knit"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "quill-cozy-socks",
+      "name": "Quill Cozy Sock Pack",
+      "description": "Three pairs of hedgehog-patterned crew socks. Reinforced heel for burrow durability.",
+      "price": 18.99,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "pack",
+        "gift"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "hedgehog-dad-hat",
+      "name": "Hedgehog Dad Hat",
+      "description": "Low-profile cotton cap with an adjustable strap and embroidered hedgehog badge.",
+      "price": 26,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "cap",
+        "casual",
+        "embroidered"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "burrow-zip-hoodie",
+      "name": "Burrow Zip Hoodie",
+      "description": "Heavyweight zip-up with kangaroo pockets and a reflective hedgehog trail print.",
+      "price": 64.99,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "zip",
+        "reflective"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "snout-peek-tee",
+      "name": "Snout Peek Pocket Tee",
+      "description": "Front pocket tee with a peeking hedgehog print. Pre-shrunk and garment-dyed.",
+      "price": 32,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "pocket",
+        "dyed"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "trail-blazer-socks",
+      "name": "Trail Blazer Ankle Socks",
+      "description": "Moisture-wicking ankle socks with grip dots for late-night foraging runs.",
+      "price": 14.99,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "athletic",
+        "wicking"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "hedge-enamel-pin-set",
+      "name": "Hedge Enamel Pin Set",
+      "description": "Set of four enamel pins: hedgehog, mushroom, leaf, and moon. Gold-tone clasps.",
+      "price": 16.5,
+      "category": "Accessories",
+      "emoji": "📌",
+      "tags": [
+        "pins",
+        "accessories",
+        "gift"
+      ],
+      "sizes": [],
+      "featured": true
+    },
+    {
+      "id": "quill-tote",
+      "name": "Quill Market Tote",
+      "description": "Canvas tote with interior pocket and a bold hedgehog line-art print.",
+      "price": 24.99,
+      "category": "Accessories",
+      "emoji": "👜",
+      "tags": [
+        "tote",
+        "canvas",
+        "eco"
+      ],
+      "sizes": [],
+      "featured": false
+    },
+    {
+      "id": "moonlit-forager-hoodie",
+      "name": "Moonlit Forager Hoodie",
+      "description": "Limited-run navy hoodie with glow-in-the-dark hedgehog constellation.",
+      "price": 59.99,
+      "category": "Hoodies",
+      "emoji": "🌙",
+      "tags": [
+        "hoodie",
+        "limited",
+        "glow"
+      ],
+      "sizes": [
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "spiny-scarf",
+      "name": "Spiny Knit Scarf",
+      "description": "Extra-long ribbed scarf in oatmeal heather with fringe ends.",
+      "price": 34,
+      "category": "Accessories",
+      "emoji": "🧣",
+      "tags": [
+        "scarf",
+        "knit",
+        "winter"
+      ],
+      "sizes": [],
+      "featured": false
+    },
+    {
+      "id": "twilight-burrow",
+      "name": "Twilight Burrow Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 62.78,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "moss-lane",
+      "name": "Moss Lane Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 33.98,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "pine-needle",
+      "name": "Pine Needle Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 19.8,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "hedge-lane",
+      "name": "Hedge Lane Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 36.52,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "acorn-rest",
+      "name": "Acorn Rest Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 39.27,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "fern-hollow",
+      "name": "Fern Hollow Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 36.03,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "root-cellar",
+      "name": "Root Cellar Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 16.64,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "leaf-pile",
+      "name": "Leaf Pile Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 55.53,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "dew-drop",
+      "name": "Dew Drop Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 27.79,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "stump-sit",
+      "name": "Stump Sit Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 65.4,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "bramble-path",
+      "name": "Bramble Path Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 25.6,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "night-snuffle",
+      "name": "Night Snuffle Hoodie",
+      "description": "Hedgehog-inspired hoodie for late-night garden adventures and cozy burrow lounging.",
+      "price": 47.21,
+      "category": "Hoodies",
+      "emoji": "🦔",
+      "tags": [
+        "hoodie",
+        "cozy",
+        "hoodies"
+      ],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "snuffle-club",
+      "name": "Snuffle Club Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 30.18,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "quill-society",
+      "name": "Quill Society Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 40.67,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "garden-patrol",
+      "name": "Garden Patrol Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 55.36,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "snout-squad",
+      "name": "Snout Squad Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 45.88,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "leaf-crunch",
+      "name": "Leaf Crunch Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 23.67,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "berry-hunt",
+      "name": "Berry Hunt Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 25.95,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "moss-walker",
+      "name": "Moss Walker Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 59.39,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "trail-scout",
+      "name": "Trail Scout Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 54.99,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "dusk-roam",
+      "name": "Dusk Roam Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 24.49,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "root-friend",
+      "name": "Root Friend Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 63.51,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "pebble-path",
+      "name": "Pebble Path Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 37.84,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "hedge-hero",
+      "name": "Hedge Hero Tee",
+      "description": "Hedgehog-inspired t-shirt for late-night garden adventures and cozy burrow lounging.",
+      "price": 33.65,
+      "category": "T-Shirts",
+      "emoji": "👕",
+      "tags": [
+        "tee",
+        "cotton",
+        "tshirts"
+      ],
+      "sizes": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "featured": true
+    },
+    {
+      "id": "forager-cap",
+      "name": "Forager Cap",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 65.3,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "snout-shade",
+      "name": "Snout Shade",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 32.04,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "quill-brim",
+      "name": "Quill Brim",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 41.21,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "leaf-peak",
+      "name": "Leaf Peak",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 69.5,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "twilight-visor",
+      "name": "Twilight Visor",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 68.33,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "burrow-brim",
+      "name": "Burrow Brim",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 59.27,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "trail-cap",
+      "name": "Trail Cap",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 19.24,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": true
+    },
+    {
+      "id": "garden-crown",
+      "name": "Garden Crown",
+      "description": "Hedgehog-inspired hat for late-night garden adventures and cozy burrow lounging.",
+      "price": 45.26,
+      "category": "Hats",
+      "emoji": "🧢",
+      "tags": [
+        "hat",
+        "outdoor",
+        "hats"
+      ],
+      "sizes": [
+        "One Size"
+      ],
+      "featured": false
+    },
+    {
+      "id": "burrow-warmth",
+      "name": "Burrow Warmth Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 51,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "trail-tread",
+      "name": "Trail Tread Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 44.34,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "snout-step",
+      "name": "Snout Step Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 43.05,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "leaf-liner",
+      "name": "Leaf Liner Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 66.44,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "night-prowl",
+      "name": "Night Prowl Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 25.44,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": false
+    },
+    {
+      "id": "quill-grip",
+      "name": "Quill Grip Socks",
+      "description": "Hedgehog-inspired sock for late-night garden adventures and cozy burrow lounging.",
+      "price": 15.11,
+      "category": "Socks",
+      "emoji": "🧦",
+      "tags": [
+        "socks",
+        "comfort",
+        "socks"
+      ],
+      "sizes": [
+        "S/M",
+        "L/XL"
+      ],
+      "featured": true
+    }
+  ]
+}
