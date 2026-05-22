@@ -1,5 +1,6 @@
 allowBuilds:
   core-js: set this to true or false
+  msw: set this to true or false
   protobufjs: set this to true or false
 minimumReleaseAgeExclude:
   - '@tanstack/react-router@1.170.7'
