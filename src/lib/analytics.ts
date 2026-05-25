@@ -207,7 +207,12 @@ export function captureAppException(
   properties?: Record<string, unknown>,
 ) {
   const err = error instanceof Error ? error : new Error(String(error))
-  capture(posthog, (client) => client.captureException(err, properties))
+  const fingerprint = (err as { fingerprint?: unknown }).fingerprint
+  const finalProperties =
+    typeof fingerprint === 'string'
+      ? { ...properties, $exception_fingerprint: fingerprint }
+      : properties
+  capture(posthog, (client) => client.captureException(err, finalProperties))
 }
 
 export function posthogRequestHeaders(posthog: PostHog): HeadersInit {

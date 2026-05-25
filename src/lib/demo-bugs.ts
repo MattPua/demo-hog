@@ -11,6 +11,7 @@ export const DEMO_PROMO_CODE = 'HEDGE10'
 
 export class DemoGlobalNotFoundError extends Error {
   readonly pathname: string
+  readonly fingerprint = 'demo-global-not-found-error'
 
   constructor(pathname: string) {
     super(`Page not found: ${pathname}`)
@@ -21,6 +22,9 @@ export class DemoGlobalNotFoundError extends Error {
 
 export class DemoCartCapacityError extends Error {
   readonly unitCount: number
+  // Stable across dev/prod bundles, line shifts, and throw sites so PostHog
+  // groups every CartSyncOverflow surface into one error tracking issue.
+  readonly fingerprint = 'demo-cart-capacity-error'
 
   constructor(unitCount: number) {
     super(
@@ -95,6 +99,7 @@ export const DEMO_MAX_CATALOG_PRODUCTS = 50
 export class DemoAdminCatalogError extends Error {
   readonly productCount: number
   readonly productId: string
+  readonly fingerprint = 'demo-admin-catalog-error'
 
   constructor(productCount: number, productId: string) {
     super(
@@ -180,6 +185,7 @@ export function validateItemCountFormat(unitCount: number): boolean {
 export class CheckoutValidationError extends Error {
   readonly itemCount: number
   readonly normalizedCount: number
+  readonly fingerprint = 'demo-checkout-validation-error'
 
   constructor(itemCount: number, normalizedCount: number) {
     super(

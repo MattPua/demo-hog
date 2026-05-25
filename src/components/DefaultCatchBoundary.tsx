@@ -30,10 +30,15 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
 
   useEffect(() => {
     const err = error instanceof Error ? error : new Error(String(error))
+    const fingerprint = (err as { fingerprint?: unknown }).fingerprint
+    const properties: Record<string, unknown> = {
+      source: 'tanstack_router_error_boundary',
+    }
+    if (typeof fingerprint === 'string') {
+      properties.$exception_fingerprint = fingerprint
+    }
     captureWhenReady(posthog, (client) => {
-      client.captureException(err, {
-        source: 'tanstack_router_error_boundary',
-      })
+      client.captureException(err, properties)
     })
   }, [error, posthog])
 

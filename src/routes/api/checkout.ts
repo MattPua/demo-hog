@@ -114,9 +114,16 @@ export const Route = createFileRoute('/api/checkout')({
               error: error instanceof Error ? error.message : 'unknown',
             },
           })
+          const fingerprint =
+            error && typeof error === 'object' && 'fingerprint' in error
+              ? (error as { fingerprint?: unknown }).fingerprint
+              : undefined
           posthog.captureException(error, distinctId, {
             $session_id: sessionId,
             source: 'checkout_api',
+            ...(typeof fingerprint === 'string'
+              ? { $exception_fingerprint: fingerprint }
+              : {}),
           })
           return Response.json({ error: 'Checkout failed' }, { status: 500 })
         }
