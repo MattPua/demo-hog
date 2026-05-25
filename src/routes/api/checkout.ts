@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { assertCheckoutCapacity } from '~/lib/demo-bugs'
+import { logStoreContext, errorStoreContext } from '~/lib/console-context'
 import { getPostHogClient } from '~/utils/posthog-server'
 import { emitServerLog } from '~/utils/posthog-server-logs'
 
@@ -17,6 +18,9 @@ type CheckoutBody = {
   email?: string
   items: CheckoutItem[]
   subtotal: number
+  promo_code?: string
+  promo_discount?: number
+  display_total?: number
   shipping: number
   total: number
   item_count: number
@@ -45,10 +49,30 @@ export const Route = createFileRoute('/api/checkout')({
         try {
           const body = (await request.json()) as CheckoutBody
 
+          logStoreContext('checkout-api', 'Checkout request received', {
+            distinct_id: distinctId,
+            session_id: sessionId ?? null,
+            user_id: body.user_id ?? null,
+            email: body.email ?? null,
+            item_count: body.item_count,
+            subtotal: body.subtotal,
+            promo_code: body.promo_code ?? null,
+            promo_discount: body.promo_discount ?? null,
+            display_total: body.display_total ?? null,
+            total: body.total,
+            line_items: body.items.length,
+          })
+
           // Intentional demo bug: checkout rejects carts over the legacy unit cap.
           assertCheckoutCapacity(body.item_count)
 
           const orderId = `QC-${Date.now().toString(36).toUpperCase()}`
+
+          logStoreContext('checkout-api', 'Checkout order completed', {
+            order_id: orderId,
+            item_count: body.item_count,
+            total: body.total,
+          })
 
           posthog.capture({
             distinctId,
@@ -79,6 +103,10 @@ export const Route = createFileRoute('/api/checkout')({
 
           return Response.json({ orderId, success: true })
         } catch (error) {
+          errorStoreContext('checkout-api', 'Checkout request failed', {
+            distinct_id: distinctId,
+            error: error instanceof Error ? error.message : 'unknown',
+          })
           emitServerLog('Checkout failed', {
             severity: 'error',
             attributes: {

@@ -13,6 +13,7 @@ import {
   captureProductRemovedFromCart,
 } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
+import { logStoreContext, warnStoreContext } from '~/lib/console-context'
 import { assertCartCapacity, DEMO_PROMO_CODE } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 
@@ -40,12 +41,27 @@ function CartPage() {
 
   useEffect(() => {
     captureCartViewed(posthog, subtotal, itemCount)
-  }, [posthog, subtotal, itemCount])
+    logStoreContext('cart', 'Cart page viewed', {
+      line_count: linesWithProducts.length,
+      item_count: itemCount,
+      subtotal,
+      display_total: displayTotal,
+      promo_code: promoCode,
+      promo_discount: promoDiscount,
+      product_ids: linesWithProducts.map((line) => line.product.id),
+    })
+  }, [posthog, subtotal, itemCount, linesWithProducts, displayTotal, promoCode, promoDiscount])
 
   // Intentional demo bug: opening the cart with >3 units crashes the page.
   assertCartCapacity(itemCount)
 
   function handleCheckout() {
+    logStoreContext('checkout', 'Checkout started from cart', {
+      item_count: itemCount,
+      display_total: displayTotal,
+      promo_code: promoCode,
+      promo_discount: promoDiscount,
+    })
     captureCheckoutStarted(posthog, displayTotal, itemCount)
     navigate({ to: '/order-summary' })
   }
@@ -54,6 +70,10 @@ function CartPage() {
     setPromoError(null)
     const result = applyPromo(promoInput)
     if (result.error) {
+      warnStoreContext('cart', 'Promo code rejected', {
+        promo_input: promoInput,
+        error: result.error,
+      })
       setPromoError(result.error)
     }
   }

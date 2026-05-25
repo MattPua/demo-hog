@@ -2,6 +2,7 @@ import { usePostHog } from '@posthog/react'
 import type { PostHog } from 'posthog-js'
 import { captureWhenReady, whenPostHogReady } from '~/lib/posthog-capture'
 import { logAuthEvent } from '~/lib/posthog-logs'
+import { logStoreContext, warnStoreContext } from '~/lib/console-context'
 import { isPostHogReady } from '~/lib/posthog-client'
 import {
   createContext,
@@ -186,11 +187,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string) => {
       const match = await verifyUser(email, password)
       if (!match) {
+        warnStoreContext('auth', 'Sign-in failed', { email })
         return { error: 'Invalid email or password.' }
       }
 
       writeSession({ userId: match.id })
       setUser(match)
+      logStoreContext('auth', 'User signed in', {
+        user_id: match.id,
+        email: match.email,
+      })
       if (isPostHogReady(posthog)) {
         identifyUser(posthog, match)
         captureWhenReady(posthog, (client) => {
@@ -221,6 +227,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const created = await createUser({ email, password, name })
         writeSession({ userId: created.id })
         setUser(created)
+        logStoreContext('auth', 'User signed up', {
+          user_id: created.id,
+          email: created.email,
+        })
         if (isPostHogReady(posthog)) {
           identifyUser(posthog, created)
           captureWhenReady(posthog, (client) => {
@@ -244,6 +254,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const signOut = useCallback(() => {
+    logStoreContext('auth', 'User signed out', {
+      user_id: user?.id ?? null,
+    })
     writeSession(null)
     setUser(null)
     if (isPostHogReady(posthog)) {
@@ -256,7 +269,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setDistinctId(ids.distinctId)
       setSessionId(ids.sessionId)
     }
-  }, [posthog])
+  }, [posthog, user?.id])
 
   const updateProfile = useCallback(
     async (name: string) => {

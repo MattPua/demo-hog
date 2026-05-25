@@ -11,6 +11,7 @@ import {
 import { useAuth } from '~/lib/auth-context'
 import { useCatalog } from '~/lib/catalog-context'
 import { getCartLines, saveCartLines, type CartLine } from '~/lib/cart-db'
+import { logStoreContext, warnStoreContext } from '~/lib/console-context'
 import {
   DEMO_CART_MAX_UNITS,
   buggedCartAfterSignIn,
@@ -68,6 +69,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           setLines(stored)
           setReady(true)
+          logStoreContext('cart', 'Cart loaded from IndexedDB', {
+            line_count: stored.length,
+            unit_count: getCartUnitCount(stored),
+            product_ids: stored.map((line) => line.productId),
+          })
         }
       })
       .catch(() => {
@@ -96,7 +102,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     prevUserRef.current = user
 
     if (wasLoggedOut && user !== null) {
-      setLines((prev) => buggedCartAfterSignIn(prev))
+      setLines((prev) => {
+        const next = buggedCartAfterSignIn(prev)
+        logStoreContext('cart', 'Cart merged after sign-in', {
+          user_id: user.id,
+          lines_before: prev.length,
+          lines_after: next.length,
+          units_before: getCartUnitCount(prev),
+          units_after: getCartUnitCount(next),
+          dropped_product_id: prev[0]?.productId,
+        })
+        return next
+      })
     }
   }, [user, authReady, ready])
 
@@ -105,6 +122,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setLines((prev) => {
         const currentUnits = getCartUnitCount(prev)
         if (wouldExceedCartCapacity(currentUnits, quantity)) {
+          warnStoreContext('cart', 'Add to cart blocked — at capacity', {
+            product_id: productId,
+            quantity,
+            unit_count: currentUnits,
+            max_units: DEMO_CART_MAX_UNITS,
+          })
           return prev
         }
 
@@ -114,13 +137,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
         )
 
         if (existing) {
-          return prev.map((l) =>
+          const next = prev.map((l) =>
             lineKey(l.productId, l.size) === key
               ? { ...l, quantity: l.quantity + quantity }
               : l,
           )
+          logStoreContext('cart', 'Cart line quantity increased', {
+            product_id: productId,
+            size: size ?? null,
+            added_quantity: quantity,
+            unit_count: getCartUnitCount(next),
+          })
+          return next
         }
-        return [...prev, { productId, quantity, size }]
+        const next = [...prev, { productId, quantity, size }]
+        logStoreContext('cart', 'Cart line added', {
+          product_id: productId,
+          size: size ?? null,
+          quantity,
+          line_count: next.length,
+          unit_count: getCartUnitCount(next),
+        })
+        return next
       })
     },
     [],
@@ -217,6 +255,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       setPromoCode(trimmed.toUpperCase())
+      logStoreContext('cart', 'Promo code applied', {
+        promo_code: trimmed.toUpperCase(),
+        subtotal,
+        promo_discount: discount,
+        display_total: Math.max(0, subtotal - discount),
+        checkout_total: buggedCheckoutTotal(subtotal, discount),
+      })
       return {}
     },
     [subtotal],

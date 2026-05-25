@@ -8,6 +8,7 @@ import { SearchBar } from '~/components/SearchBar'
 import { Badge } from '~/components/ui/badge'
 import { captureProductsSearched } from '~/lib/analytics'
 import { useCatalog } from '~/lib/catalog-context'
+import { logStoreContext } from '~/lib/console-context'
 import {
   DEMO_FLAGS,
   HOME_GRID_VARIANTS,
@@ -38,6 +39,15 @@ function ShopPage() {
     if (!query.trim() && !category) return
 
     const timer = window.setTimeout(() => {
+      const tokens = query.trim().split(/\s+/).filter(Boolean)
+      logStoreContext('search', 'Catalog search executed', {
+        query,
+        tokens,
+        effective_token: tokens.length > 1 ? tokens.at(-1) : tokens[0] ?? '',
+        category,
+        results_count: filtered.length,
+        has_results: filtered.length > 0,
+      })
       captureProductsSearched(posthog, {
         query,
         category,

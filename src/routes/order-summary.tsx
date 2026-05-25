@@ -7,6 +7,7 @@ import { PageShell } from '~/components/PageShell'
 import { Button } from '~/components/ui/button'
 import { captureAppException, posthogRequestHeaders } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
+import { logStoreContext, warnStoreContext, errorStoreContext } from '~/lib/console-context'
 import { validateItemCountFormat } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 import { useAuth } from '~/lib/auth-context'
@@ -31,6 +32,31 @@ function OrderSummaryPage() {
 
   const shipping = 0
   const total = checkoutTotal + shipping
+
+  useEffect(() => {
+    if (linesWithProducts.length === 0) return
+
+    logStoreContext('checkout', 'Order summary viewed', {
+      user_id: user?.id ?? null,
+      line_count: linesWithProducts.length,
+      item_count: itemCount,
+      subtotal,
+      promo_code: promoCode,
+      promo_discount: promoDiscount,
+      display_total: displayTotal,
+      checkout_total: checkoutTotal,
+      product_ids: linesWithProducts.map((line) => line.product.id),
+    })
+  }, [
+    linesWithProducts,
+    itemCount,
+    subtotal,
+    promoCode,
+    promoDiscount,
+    displayTotal,
+    checkoutTotal,
+    user?.id,
+  ])
 
   if (linesWithProducts.length === 0 && status !== 'success') {
     return (
@@ -57,7 +83,27 @@ function OrderSummaryPage() {
   async function placeOrder() {
     setCheckoutError(null)
 
-    if (!validateItemCountFormat(itemCount)) {
+    const normalizedCount = Number(String(itemCount))
+    const validationPassed = validateItemCountFormat(itemCount)
+
+    logStoreContext('checkout', 'Place order clicked', {
+      user_id: user?.id ?? null,
+      email: email || user?.email || null,
+      item_count: itemCount,
+      normalized_count: normalizedCount,
+      validation_passed: validationPassed,
+      display_total: displayTotal,
+      checkout_total: checkoutTotal,
+      promo_code: promoCode,
+      promo_discount: promoDiscount,
+    })
+
+    if (!validationPassed) {
+      warnStoreContext('checkout', 'Pre-submit validation failed', {
+        item_count: itemCount,
+        normalized_count: normalizedCount,
+        expected_for_pass: itemCount - 1,
+      })
       setCheckoutError(
         'Unable to place your order right now. Please review your cart and try again.',
       )
@@ -66,41 +112,55 @@ function OrderSummaryPage() {
 
     setStatus('loading')
     try {
+      const payload = {
+        user_id: user?.id,
+        email: email || user?.email || undefined,
+        items: linesWithProducts.map((line) => ({
+          product_id: line.product.id,
+          product_name: line.product.name,
+          quantity: line.quantity,
+          size: line.size,
+          unit_price: line.product.price,
+          line_total: line.product.price * line.quantity,
+        })),
+        subtotal,
+        promo_code: promoCode ?? undefined,
+        promo_discount: promoDiscount,
+        display_total: displayTotal,
+        shipping,
+        total,
+        item_count: itemCount,
+      }
+
+      logStoreContext('checkout', 'Submitting order to API', payload)
+
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...posthogRequestHeaders(posthog),
         },
-        body: JSON.stringify({
-          user_id: user?.id,
-          email: email || user?.email || undefined,
-          items: linesWithProducts.map((line) => ({
-            product_id: line.product.id,
-            product_name: line.product.name,
-            quantity: line.quantity,
-            size: line.size,
-            unit_price: line.product.price,
-            line_total: line.product.price * line.quantity,
-          })),
-          subtotal,
-          promo_code: promoCode ?? undefined,
-          promo_discount: promoDiscount,
-          display_total: displayTotal,
-          shipping,
-          total,
-          item_count: itemCount,
-        }),
+        body: JSON.stringify(payload),
       })
 
       if (!res.ok) throw new Error('Checkout failed')
 
       const data = (await res.json()) as { orderId: string }
+      logStoreContext('checkout', 'Order placed successfully', {
+        order_id: data.orderId,
+        total,
+        item_count: itemCount,
+      })
       setOrderId(data.orderId)
       clearCart()
       setStatus('success')
     } catch (error) {
       setStatus('idle')
+      errorStoreContext('checkout', 'Order placement failed', {
+        error: error instanceof Error ? error.message : 'unknown',
+        item_count: itemCount,
+        checkout_total: checkoutTotal,
+      })
       captureAppException(posthog, error, { source: 'checkout_client' })
     }
   }
