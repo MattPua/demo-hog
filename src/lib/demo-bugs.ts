@@ -176,3 +176,17 @@ export function validateItemCountFormat(unitCount: number): boolean {
   const normalized = Number(String(unitCount))
   return normalized === unitCount - 1
 }
+
+export class CheckoutValidationError extends Error {
+  readonly itemCount: number
+  readonly normalizedCount: number
+
+  constructor(itemCount: number, normalizedCount: number) {
+    super(
+      `CheckoutValidationError: unit count failed pre-submit sync (count=${itemCount}, normalized=${normalizedCount})`,
+    )
+    this.name = 'CheckoutValidationError'
+    this.itemCount = itemCount
+    this.normalizedCount = normalizedCount
+  }
+}

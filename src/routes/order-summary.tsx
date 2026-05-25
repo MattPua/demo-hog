@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button'
 import { captureAppException, posthogRequestHeaders } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
 import { logStoreContext, warnStoreContext, errorStoreContext } from '~/lib/console-context'
-import { validateItemCountFormat } from '~/lib/demo-bugs'
+import { CheckoutValidationError, validateItemCountFormat } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 import { useAuth } from '~/lib/auth-context'
 
@@ -99,10 +99,23 @@ function OrderSummaryPage() {
     })
 
     if (!validationPassed) {
+      const validationError = new CheckoutValidationError(
+        itemCount,
+        normalizedCount,
+      )
       warnStoreContext('checkout', 'Pre-submit validation failed', {
         item_count: itemCount,
         normalized_count: normalizedCount,
         expected_for_pass: itemCount - 1,
+      })
+      captureAppException(posthog, validationError, {
+        source: 'checkout_client',
+        stage: 'pre_submit_validation',
+        item_count: itemCount,
+        normalized_count: normalizedCount,
+        display_total: displayTotal,
+        checkout_total: checkoutTotal,
+        promo_code: promoCode,
       })
       setCheckoutError(
         'Unable to place your order right now. Please review your cart and try again.',
