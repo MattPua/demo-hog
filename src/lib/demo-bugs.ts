@@ -6,7 +6,7 @@
 import type { CartLine } from '~/lib/cart-db'
 import type { Product } from '~/lib/catalog-db'
 
-export const DEMO_CART_MAX_UNITS = 3
+export const DEMO_CART_MAX_UNITS = 99
 export const DEMO_PROMO_CODE = 'HEDGE10'
 
 export class DemoGlobalNotFoundError extends Error {
@@ -47,7 +47,7 @@ export function wouldExceedCartCapacity(
   currentCount: number,
   addedQuantity: number,
 ): boolean {
-  return currentCount >= DEMO_CART_MAX_UNITS
+  return currentCount + addedQuantity > DEMO_CART_MAX_UNITS
 }
 
 /** Lets one extra unit slip through before sync fails (intentional off-by-one). */

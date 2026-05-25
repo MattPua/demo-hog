@@ -11,10 +11,9 @@ import { useCatalog } from '~/lib/catalog-context'
 import { useCart } from '~/lib/cart'
 import {
   DEMO_CART_MAX_UNITS,
-  DemoCartCapacityError,
   wouldExceedCartCapacity,
 } from '~/lib/demo-bugs'
-import { logCommerceError, logCommerceWarning } from '~/lib/posthog-logs'
+import { logCommerceWarning } from '~/lib/posthog-logs'
 import { formatPrice, type Product } from '~/lib/products'
 import { DEMO_FLAGS, PDP_CTA_VARIANTS } from '~/lib/demo-flags'
 import { cn } from '~/lib/utils'
@@ -74,17 +73,6 @@ function ProductDetails({ product }: { product: Product }) {
     }
 
     addItem(product.id, quantity, size)
-
-    const nextCount = itemCount + quantity
-    if (nextCount > DEMO_CART_MAX_UNITS) {
-      logCommerceError(posthog, 'Cart capacity overflow after add', {
-        product_id: product.id,
-        quantity,
-        cart_item_count: nextCount,
-        max_units: DEMO_CART_MAX_UNITS,
-      })
-      throw new DemoCartCapacityError(nextCount)
-    }
 
     captureAddToCart(posthog, product, {
       quantity,

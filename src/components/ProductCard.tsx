@@ -1,9 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { useFeatureFlagEnabled, usePostHog } from '@posthog/react'
 import { ArrowRight, Zap } from 'lucide-react'
-import { DecoyButton } from '~/components/demo/DecoyButton'
+import { useCart } from '~/lib/cart'
 import { DEMO_FLAGS } from '~/lib/demo-flags'
-import { captureProductListingClicked } from '~/lib/analytics'
+import {
+  captureAddToCart,
+  captureProductListingClicked,
+} from '~/lib/analytics'
 import { formatPrice, type Product } from '~/lib/products'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -19,9 +22,20 @@ import {
 export function ProductCard({ product }: { product: Product }) {
   const posthog = usePostHog()
   const saleMode = useFeatureFlagEnabled(DEMO_FLAGS.spineySaleBadges)
+  const { addItem, itemCount, subtotal } = useCart()
 
   function handleViewProduct() {
     captureProductListingClicked(posthog, product)
+  }
+
+  function handleQuickAdd() {
+    addItem(product.id, 1)
+    captureAddToCart(posthog, product, {
+      quantity: 1,
+      cartTotal: subtotal + product.price,
+      cartItemCount: itemCount + 1,
+      source: 'listing',
+    })
   }
 
   return (
@@ -53,10 +67,16 @@ export function ProductCard({ product }: { product: Product }) {
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full gap-2">
-          <DecoyButton variant="outline" className="flex-1 gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1 gap-1.5"
+            onClick={handleQuickAdd}
+            disabled={product.sizes.length > 0}
+          >
             <Zap className="size-4" />
             Quick add
-          </DecoyButton>
+          </Button>
           <Button asChild className="flex-1">
             <Link
               to="/products/$productId"

@@ -88,27 +88,27 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
   const app = (
     <>
-          <PostHogErrorBoundary
-            fallback={PostHogErrorFallback}
-            additionalProperties={{ source: 'react_error_boundary' }}
-          >
-            <PostHogNavigationTracker />
-            <AuthProvider>
-              <ThemeProvider>
-                <CatalogProvider>
-                  <CartProvider>
-                    <div className="flex min-h-screen flex-col">
-                      <AppHeader />
-                      <div className="flex min-h-0 flex-1 flex-col">
-                        <CatalogGate>{children}</CatalogGate>
-                      </div>
-                      <AppFooter />
-                    </div>
-                  </CartProvider>
-                </CatalogProvider>
-              </ThemeProvider>
-            </AuthProvider>
-      </PostHogErrorBoundary>
+      <PostHogNavigationTracker />
+      <AuthProvider>
+        <ThemeProvider>
+          <CatalogProvider>
+            <CartProvider>
+              <PostHogErrorBoundary
+                fallback={PostHogErrorFallback}
+                additionalProperties={{ source: 'react_error_boundary' }}
+              >
+                <div className="flex min-h-screen flex-col">
+                  <AppHeader />
+                  <div className="flex min-h-0 flex-1 flex-col">
+                    <CatalogGate>{children}</CatalogGate>
+                  </div>
+                  <AppFooter />
+                </div>
+              </PostHogErrorBoundary>
+            </CartProvider>
+          </CatalogProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </>
   )
 
