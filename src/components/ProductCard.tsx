@@ -1,9 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { useFeatureFlagEnabled, usePostHog } from '@posthog/react'
+import { useState } from 'react'
 import { ArrowRight, Zap } from 'lucide-react'
-import { DecoyButton } from '~/components/demo/DecoyButton'
 import { DEMO_FLAGS } from '~/lib/demo-flags'
-import { captureProductListingClicked } from '~/lib/analytics'
+import { captureAddToCart, captureProductListingClicked } from '~/lib/analytics'
+import { useCart } from '~/lib/cart'
+import { DEMO_CART_MAX_UNITS, wouldExceedCartCapacity } from '~/lib/demo-bugs'
+import { logCommerceWarning } from '~/lib/posthog-logs'
 import { formatPrice, type Product } from '~/lib/products'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -19,9 +22,40 @@ import {
 export function ProductCard({ product }: { product: Product }) {
   const posthog = usePostHog()
   const saleMode = useFeatureFlagEnabled(DEMO_FLAGS.spineySaleBadges)
+  const { addItem, itemCount, subtotal } = useCart()
+  const [added, setAdded] = useState(false)
+  const [quickAddError, setQuickAddError] = useState<string | null>(null)
 
   function handleViewProduct() {
     captureProductListingClicked(posthog, product)
+  }
+
+  function handleQuickAdd() {
+    setQuickAddError(null)
+    const quantity = 1
+    const size = product.sizes[0]
+
+    if (wouldExceedCartCapacity(itemCount, quantity)) {
+      setQuickAddError('Cart is full')
+      logCommerceWarning(posthog, 'Quick add blocked — cart at capacity', {
+        product_id: product.id,
+        quantity,
+        cart_item_count: itemCount,
+        max_units: DEMO_CART_MAX_UNITS,
+      })
+      return
+    }
+
+    addItem(product.id, quantity, size)
+    captureAddToCart(posthog, product, {
+      quantity,
+      size,
+      cartTotal: subtotal + product.price * quantity,
+      cartItemCount: itemCount + quantity,
+      source: 'listing',
+    })
+    setAdded(true)
+    window.setTimeout(() => setAdded(false), 2000)
   }
 
   return (
@@ -53,10 +87,16 @@ export function ProductCard({ product }: { product: Product }) {
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
         <div className="flex w-full gap-2">
-          <DecoyButton variant="outline" className="flex-1 gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1 gap-1.5"
+            onClick={handleQuickAdd}
+            disabled={added}
+          >
             <Zap className="size-4" />
-            Quick add
-          </DecoyButton>
+            {added ? 'Added' : 'Quick add'}
+          </Button>
           <Button asChild className="flex-1">
             <Link
               to="/products/$productId"
@@ -68,6 +108,9 @@ export function ProductCard({ product }: { product: Product }) {
             </Link>
           </Button>
         </div>
+        {quickAddError ? (
+          <p className="w-full text-center text-xs text-destructive">{quickAddError}</p>
+        ) : null}
       </CardFooter>
     </Card>
   )
