@@ -34,12 +34,6 @@ export function getCartUnitCount(lines: { quantity: number }[]): number {
   return lines.reduce((sum, line) => sum + line.quantity, 0)
 }
 
-/** Throws when the cart exceeds the fake legacy limit (crashes the cart route). */
-export function assertCartCapacity(unitCount: number): void {
-  if (unitCount > DEMO_CART_MAX_UNITS) {
-    throw new DemoCartCapacityError(unitCount)
-  }
-}
 
 /** Blocks new adds once you are already over the supported cap. */
 export function wouldExceedCartCapacity(
@@ -49,36 +43,24 @@ export function wouldExceedCartCapacity(
   return currentCount >= DEMO_CART_MAX_UNITS
 }
 
-/** Lets one extra unit slip through before sync fails (intentional off-by-one). */
+/** Allows quantity changes on the cart page regardless of unit count. */
 export function shouldBlockQuantityIncrease(
-  otherLineUnits: number,
-  nextQuantity: number,
+  _otherLineUnits: number,
+  _nextQuantity: number,
 ): boolean {
-  return otherLineUnits + nextQuantity > DEMO_CART_MAX_UNITS + 1
+  return false
 }
 
 type PricedLine = { product: { price: number }; quantity: number }
 
-/**
- * Legacy pricing path only totals the first line once you are over the unit cap.
- */
 export function buggedCartSubtotal(
   lines: PricedLine[],
-  unitCount: number,
+  _unitCount: number,
 ): number {
-  const actual = lines.reduce(
+  return lines.reduce(
     (sum, line) => sum + line.product.price * line.quantity,
     0,
   )
-
-  if (unitCount <= DEMO_CART_MAX_UNITS) {
-    return actual
-  }
-
-  const first = lines[0]
-  if (!first) return Number.NaN
-
-  return first.product.price * first.quantity
 }
 
 /** Checkout service rejects orders that violate the same legacy cap. */

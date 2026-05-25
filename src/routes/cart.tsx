@@ -14,7 +14,7 @@ import {
 } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
 import { logStoreContext, warnStoreContext } from '~/lib/console-context'
-import { assertCartCapacity, DEMO_PROMO_CODE } from '~/lib/demo-bugs'
+import { DEMO_PROMO_CODE } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 
 export const Route = createFileRoute('/cart')({
@@ -51,9 +51,6 @@ function CartPage() {
       product_ids: linesWithProducts.map((line) => line.product.id),
     })
   }, [posthog, subtotal, itemCount, linesWithProducts, displayTotal, promoCode, promoDiscount])
-
-  // Intentional demo bug: opening the cart with >3 units crashes the page.
-  assertCartCapacity(itemCount)
 
   function handleCheckout() {
     logStoreContext('checkout', 'Checkout started from cart', {
