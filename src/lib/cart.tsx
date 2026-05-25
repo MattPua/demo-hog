@@ -4,17 +4,14 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import { useAuth } from '~/lib/auth-context'
 import { useCatalog } from '~/lib/catalog-context'
 import { getCartLines, saveCartLines, type CartLine } from '~/lib/cart-db'
 import { logStoreContext, warnStoreContext } from '~/lib/console-context'
 import {
   DEMO_CART_MAX_UNITS,
-  buggedCartAfterSignIn,
   buggedCartSubtotal,
   buggedCheckoutTotal,
   calculatePromoDiscount,
@@ -54,12 +51,10 @@ function lineKey(productId: string, size?: string) {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { user, isReady: authReady } = useAuth()
   const { getProductById, status: catalogStatus } = useCatalog()
   const [lines, setLines] = useState<CartLine[]>([])
   const [ready, setReady] = useState(false)
   const [promoCode, setPromoCode] = useState<string | null>(null)
-  const prevUserRef = useRef<typeof user | undefined>(undefined)
 
   useEffect(() => {
     if (catalogStatus !== 'ready') return
@@ -88,34 +83,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (!ready) return
     saveCartLines(lines).catch(() => {})
   }, [lines, ready])
-
-  // Intentional demo bug: signing in drops the first cart line.
-  useEffect(() => {
-    if (!authReady || !ready) return
-
-    if (prevUserRef.current === undefined) {
-      prevUserRef.current = user
-      return
-    }
-
-    const wasLoggedOut = prevUserRef.current === null
-    prevUserRef.current = user
-
-    if (wasLoggedOut && user !== null) {
-      setLines((prev) => {
-        const next = buggedCartAfterSignIn(prev)
-        logStoreContext('cart', 'Cart merged after sign-in', {
-          user_id: user.id,
-          lines_before: prev.length,
-          lines_after: next.length,
-          units_before: getCartUnitCount(prev),
-          units_after: getCartUnitCount(next),
-          dropped_product_id: prev[0]?.productId,
-        })
-        return next
-      })
-    }
-  }, [user, authReady, ready])
 
   const addItem = useCallback(
     (productId: string, quantity: number, size?: string) => {
