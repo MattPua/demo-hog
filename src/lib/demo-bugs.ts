@@ -3,7 +3,6 @@
  * Remove or disable when you want a fully working storefront.
  */
 
-import type { CartLine } from '~/lib/cart-db'
 import type { Product } from '~/lib/catalog-db'
 
 export const DEMO_CART_MAX_UNITS = 3
@@ -144,12 +143,6 @@ export function buggedFilterProducts(
       .toLowerCase()
     return haystack.includes(q)
   })
-}
-
-/** Auth bug: first cart line is dropped when a guest session signs in. */
-export function buggedCartAfterSignIn(lines: CartLine[]): CartLine[] {
-  if (lines.length < 2) return lines
-  return lines.slice(1)
 }
 
 export function calculatePromoDiscount(
