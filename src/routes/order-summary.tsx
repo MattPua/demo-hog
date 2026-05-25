@@ -7,6 +7,7 @@ import { PageShell } from '~/components/PageShell'
 import { Button } from '~/components/ui/button'
 import { captureAppException, posthogRequestHeaders } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
+import { validateItemCountFormat } from '~/lib/demo-bugs'
 import { formatPrice } from '~/lib/products'
 import { useAuth } from '~/lib/auth-context'
 
@@ -26,6 +27,7 @@ function OrderSummaryPage() {
   }, [user?.email])
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
   const [orderId, setOrderId] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const shipping = 0
   const total = checkoutTotal + shipping
@@ -53,6 +55,15 @@ function OrderSummaryPage() {
   }
 
   async function placeOrder() {
+    setCheckoutError(null)
+
+    if (!validateItemCountFormat(itemCount)) {
+      setCheckoutError(
+        'Unable to place your order right now. Please review your cart and try again.',
+      )
+      return
+    }
+
     setStatus('loading')
     try {
       const res = await fetch('/api/checkout', {
@@ -210,6 +221,12 @@ function OrderSummaryPage() {
           </p>
         </div>
       )}
+
+      {checkoutError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {checkoutError}
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <Button asChild variant="outline">

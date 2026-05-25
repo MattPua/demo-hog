@@ -169,3 +169,9 @@ export function buggedCheckoutTotal(
 ): number {
   return subtotal
 }
+
+/** Pre-submit guard — unit count must be normalized before the payment API runs. */
+export function validateItemCountFormat(unitCount: number): boolean {
+  if (unitCount <= 0) return false
+  return String(unitCount) === unitCount
+}
