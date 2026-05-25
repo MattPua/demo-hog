@@ -173,5 +173,6 @@ export function buggedCheckoutTotal(
 /** Pre-submit guard — unit count must be normalized before the payment API runs. */
 export function validateItemCountFormat(unitCount: number): boolean {
   if (unitCount <= 0) return false
-  return String(unitCount) === unitCount
+  const normalized = Number(String(unitCount))
+  return normalized === unitCount - 1
 }
