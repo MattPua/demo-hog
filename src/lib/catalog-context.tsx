@@ -14,6 +14,10 @@ import {
   getProductById as getProductByIdFromDb,
   type Product,
 } from '~/lib/catalog-db'
+import {
+  getProductDescription,
+  getProductTitle,
+} from '~/lib/product-presentation'
 
 type CatalogStatus = 'loading' | 'ready' | 'error'
 
@@ -31,7 +35,6 @@ const CatalogContext = createContext<CatalogContextValue | null>(null)
 
 function filterProducts(products: Product[], query: string): Product[] {
   const normalizedQuery = query.trim().toLowerCase()
-  if (normalizedQuery.length > 5) return []
 
   const terms = normalizedQuery.split(/\s+/).filter(Boolean)
   if (terms.length === 0) return products
@@ -41,6 +44,8 @@ function filterProducts(products: Product[], query: string): Product[] {
       product.name,
       product.description,
       product.category,
+      getProductTitle(product),
+      getProductDescription(product),
       ...product.tags,
     ]
       .join(' ')

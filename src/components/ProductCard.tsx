@@ -55,6 +55,12 @@ import { toast } from 'sonner'
 import { DEMO_FLAGS } from '~/lib/demo-flags'
 import { captureAddToCart, captureProductListingClicked } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
+import {
+  getProductDescription,
+  getProductHoggieIndex,
+  getProductTitle,
+  hashProductId,
+} from '~/lib/product-presentation'
 import { formatPrice, type Product } from '~/lib/products'
 import { cn } from '~/lib/utils'
 import { Badge } from '~/components/ui/badge'
@@ -69,69 +75,6 @@ import {
 } from '~/components/ui/card'
 
 const hoggies = [hoggie0, hoggie1, hoggie2, hoggie3, hoggie4, hoggie5, hoggie6, hoggie7, hoggie8, hoggie9, hoggie10, hoggie11, hoggie12, hoggie13, hoggie14, hoggie15, hoggie16, hoggie17, hoggie18, hoggie19, hoggie20, hoggie21, hoggie22, hoggie23, hoggie24, hoggie25, hoggie26, hoggie27, hoggie28, hoggie29, hoggie30, hoggie31, hoggie32, hoggie33, hoggie34, hoggie35, hoggie36, hoggie37, hoggie38, hoggie39, hoggie40, hoggie41, hoggie42, hoggie43, hoggie44, hoggie45, hoggie46, hoggie47, hoggie48, hoggie49]
-
-const hoggieNames = ['70s Dance', '996', 'Angel', 'Ape', 'Art Thief', 'Back to the Future', 'Ball', 'Banana', 'Basketball Coach', 'Bat', 'Beaker', 'Boombox', 'Business Evolution', 'Cake', 'Campfire Cowboy', 'Card', 'Caribana', 'Caveman', 'Cereal', 'Chart', 'Chef', 'Coconut', 'Code Bubble', 'Coding Group', 'Coffee Cup', 'Coffee Run', 'Commuter', 'Construction', 'Construction Crew', 'Cowboy Lasso', 'Croissant', 'Cursor', 'Dadd AI', 'Dadd AI Duo', 'Data Thief', 'Desk Wizard', 'Director', 'DJ', 'Doc Brown', 'Doctor', 'Doctor Duo', 'Doll House', 'Dr Manhattan', 'Drake Nah', 'Drake Yah', 'Driving Hogzilla', 'Einstein Group', 'Einstein', 'Evel', 'Experiment'] as const
-
-const productLabels = {
-  Accessories: 'Accessory',
-  Hats: 'Hat',
-  Hoodies: 'Hoodie',
-  Socks: 'Socks',
-  'T-Shirts': 'Tee',
-} as const
-
-const productHoggieIndexes: Record<string, number> = {
-  'classic-hedge-hoodie': 0,
-  'spike-back-tee': 1,
-  'garden-night-cap': 2,
-  'quill-cozy-socks': 3,
-  'hedgehog-dad-hat': 4,
-  'burrow-zip-hoodie': 5,
-  'snout-peek-tee': 6,
-  'trail-blazer-socks': 7,
-  'hedge-enamel-pin-set': 8,
-  'quill-tote': 9,
-  'moonlit-forager-hoodie': 10,
-  'spiny-scarf': 11,
-  'twilight-burrow': 12,
-  'moss-lane': 13,
-  'pine-needle': 14,
-  'hedge-lane': 15,
-  'acorn-rest': 16,
-  'fern-hollow': 17,
-  'root-cellar': 18,
-  'leaf-pile': 19,
-  'dew-drop': 20,
-  'stump-sit': 21,
-  'bramble-path': 22,
-  'night-snuffle': 23,
-  'snuffle-club': 24,
-  'quill-society': 25,
-  'garden-patrol': 26,
-  'snout-squad': 27,
-  'leaf-crunch': 28,
-  'berry-hunt': 29,
-  'moss-walker': 30,
-  'trail-scout': 31,
-  'dusk-roam': 32,
-  'root-friend': 33,
-  'pebble-path': 34,
-  'hedge-hero': 35,
-  'forager-cap': 36,
-  'snout-shade': 37,
-  'quill-brim': 38,
-  'leaf-peak': 39,
-  'twilight-visor': 40,
-  'burrow-brim': 41,
-  'trail-cap': 42,
-  'garden-crown': 43,
-  'burrow-warmth': 44,
-  'trail-tread': 45,
-  'snout-step': 46,
-  'leaf-liner': 47,
-  'night-prowl': 48,
-  'quill-grip': 49,
-}
 
 const cardThemes = [
   'from-[var(--posthog-lemon-lighter)] via-[var(--posthog-lemon-lighter)] to-[var(--posthog-tangerine-lighter)]',
@@ -150,20 +93,13 @@ const tagThemes = [
   'bg-[var(--posthog-tangerine-lighter)] text-[var(--posthog-tangerine-darker)] hover:bg-[var(--posthog-tangerine)]',
 ] as const
 
-function hashProductId(id: string) {
-  return [...id].reduce((total, character) => total + character.charCodeAt(0), 0)
-}
-
 export function getProductPresentation(product: Product) {
-  const productHash = hashProductId(product.id)
-  const hoggieIndex = productHoggieIndexes[product.id] ?? productHash % hoggies.length
-  const hoggieName = hoggieNames[hoggieIndex]
-  const productLabel = productLabels[product.category as keyof typeof productLabels] ?? 'Item'
+  const hoggieIndex = getProductHoggieIndex(product)
 
   return {
-    description: `A ${productLabel.toLowerCase()} with the ${hoggieName} Hoggie artwork.`,
+    description: getProductDescription(product),
     hoggie: hoggies[hoggieIndex],
-    title: `${hoggieName} ${productLabel}`,
+    title: getProductTitle(product),
     theme: cardThemes[hoggieIndex % cardThemes.length],
   }
 }
