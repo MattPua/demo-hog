@@ -51,6 +51,7 @@ import hoggie47 from '@posthog/brand/hoggies/png/einstein'
 import hoggie48 from '@posthog/brand/hoggies/png/evel'
 import hoggie49 from '@posthog/brand/hoggies/png/experiment'
 import { ArrowRight, Sparkles, Zap } from 'lucide-react'
+import { toast } from 'sonner'
 import { DEMO_FLAGS } from '~/lib/demo-flags'
 import { captureAddToCart, captureProductListingClicked } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
@@ -193,6 +194,7 @@ export function ProductCard({
   function handleQuickAdd() {
     const size = product.sizes[0]
     addItem(product.id, 1, size)
+    toast.success(`${presentation.title} added to cart`)
     captureAddToCart(posthog, product, {
       quantity: 1,
       size,

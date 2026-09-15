@@ -5,6 +5,7 @@ import {
   createRootRoute,
 } from '@tanstack/react-router'
 import { PostHogErrorBoundary } from '@posthog/react'
+import { Toaster } from 'sonner'
 import { PostHogBrowserProvider } from '~/components/PostHogBrowserProvider'
 import { PostHogNavigationTracker } from '~/components/PostHogNavigationTracker'
 import * as React from 'react'
@@ -91,6 +92,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                       </div>
                       <AppFooter />
                     </div>
+                    <Toaster position="bottom-right" closeButton richColors />
                   </CartProvider>
                 </CatalogProvider>
               </ThemeProvider>

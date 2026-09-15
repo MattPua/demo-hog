@@ -2,6 +2,7 @@ import { Link, Navigate, createFileRoute, notFound } from '@tanstack/react-route
 import { useFeatureFlagVariantKey, usePostHog } from '@posthog/react'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, Minus, Plus, ShoppingCart } from 'lucide-react'
+import { toast } from 'sonner'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { PageShell } from '~/components/PageShell'
 import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
@@ -75,6 +76,10 @@ function ProductDetails({
 
   function handleAddToCart() {
     addItem(product.id, quantity, size)
+    toast.success(
+      `${quantity} ${quantity === 1 ? 'item' : 'items'} added to cart`,
+      { description: presentation.title },
+    )
 
     captureAddToCart(posthog, product, {
       quantity,
