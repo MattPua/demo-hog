@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { CheckCircle2, Loader2 } from 'lucide-react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { PageShell } from '~/components/PageShell'
+import { getProductPresentation } from '~/components/ProductCard'
 import { Button } from '~/components/ui/button'
 import { captureAppException, posthogRequestHeaders } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
@@ -128,14 +129,18 @@ function OrderSummaryPage() {
       const payload = {
         user_id: user?.id,
         email: email || user?.email || undefined,
-        items: linesWithProducts.map((line) => ({
-          product_id: line.product.id,
-          product_name: line.product.name,
-          quantity: line.quantity,
-          size: line.size,
-          unit_price: line.product.price,
-          line_total: line.product.price * line.quantity,
-        })),
+        items: linesWithProducts.map((line) => {
+          const presentation = getProductPresentation(line.product)
+
+          return {
+            product_id: line.product.id,
+            product_name: presentation.title,
+            quantity: line.quantity,
+            size: line.size,
+            unit_price: line.product.price,
+            line_total: line.product.price * line.quantity,
+          }
+        }),
         subtotal,
         promo_code: promoCode ?? undefined,
         promo_discount: promoDiscount,
@@ -224,15 +229,18 @@ function OrderSummaryPage() {
       </div>
 
       <ul className="divide-y rounded-xl border">
-        {linesWithProducts.map((line) => (
-          <li
+        {linesWithProducts.map((line) => {
+          const presentation = getProductPresentation(line.product)
+
+          return (
+            <li
             key={`${line.productId}-${line.size ?? ''}`}
             className="flex items-center justify-between gap-4 p-4"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{line.product.emoji}</span>
+              <img src={presentation.hoggie} alt="" className="size-10 object-contain" />
               <div>
-                <p className="font-medium">{line.product.name}</p>
+                <p className="font-medium">{presentation.title}</p>
                 <p className="text-sm text-muted-foreground">
                   Qty {line.quantity}
                   {line.size ? ` · ${line.size}` : ''}
@@ -242,8 +250,9 @@ function OrderSummaryPage() {
             <p className="font-medium">
               {formatPrice(line.product.price * line.quantity)}
             </p>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
 
       <div className="space-y-2 rounded-xl border p-4 text-sm">

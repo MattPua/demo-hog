@@ -3,6 +3,7 @@ import { usePostHog } from '@posthog/react'
 import { ExternalLink, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
+import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
 import { ProductForm } from '~/components/admin/ProductForm'
 import { Button } from '~/components/ui/button'
 import {
@@ -44,6 +45,7 @@ function AdminEditProductForm({ product }: { product: Product }) {
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const presentation = getProductPresentation(product)
 
   async function handleSave(
     state: Parameters<typeof formStateToProduct>[0],
@@ -70,7 +72,7 @@ function AdminEditProductForm({ product }: { product: Product }) {
   async function handleDelete() {
     if (
       !window.confirm(
-        `Delete “${product.name}”? This cannot be undone.`,
+        `Delete “${presentation.title}”? This cannot be undone.`,
       )
     ) {
       return
@@ -93,7 +95,7 @@ function AdminEditProductForm({ product }: { product: Product }) {
       <AppBreadcrumbs
         items={[
           { label: 'Admin', to: '/admin' },
-          { label: product.name },
+          { label: presentation.title },
         ]}
       />
       <div className="flex flex-wrap items-center gap-3">
@@ -102,7 +104,7 @@ function AdminEditProductForm({ product }: { product: Product }) {
         </Button>
         <Button variant="ghost" size="sm" asChild>
           <a
-            href={`/products/${product.id}`}
+            href={`/products/${getProductSlug(product)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5"
@@ -116,8 +118,8 @@ function AdminEditProductForm({ product }: { product: Product }) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">{product.emoji}</span>
-            Edit {product.name}
+            <img src={presentation.hoggie} alt="" className="size-10 object-contain" />
+            Edit {presentation.title}
           </CardTitle>
           <CardDescription>
             ID: <span className="font-mono">{product.id}</span> — changes persist
@@ -132,7 +134,11 @@ function AdminEditProductForm({ product }: { product: Product }) {
           ) : null}
           <ProductForm
             mode="edit"
-            initial={product}
+            initial={{
+              ...product,
+              name: presentation.title,
+              description: presentation.description,
+            }}
             categories={categories}
             existingIds={[]}
             submitLabel={saving ? 'Saving…' : 'Save changes'}

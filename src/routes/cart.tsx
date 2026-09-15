@@ -6,6 +6,7 @@ import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { CartCelebration } from '~/components/demo/CartCelebration'
 import { TrustBadges } from '~/components/demo/TrustBadges'
 import { PageShell } from '~/components/PageShell'
+import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
 import { Button } from '~/components/ui/button'
 import {
   captureCheckoutStarted,
@@ -143,21 +144,24 @@ function CartPage() {
       ) : null}
 
       <ul className="divide-y rounded-xl border">
-        {linesWithProducts.map((line) => (
-          <li
+        {linesWithProducts.map((line) => {
+          const presentation = getProductPresentation(line.product)
+
+          return (
+            <li
             key={`${line.productId}-${line.size ?? ''}`}
             className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
           >
-            <div className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-amber-50 to-emerald-50 text-3xl dark:from-amber-950/40 dark:to-emerald-950/40">
-              {line.product.emoji}
+            <div className={`flex size-16 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${presentation.theme}`}>
+              <img src={presentation.hoggie} alt="" className="size-12 object-contain" />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
               <Link
                 to="/products/$productId"
-                params={{ productId: line.product.id }}
+                params={{ productId: getProductSlug(line.product) }}
                 className="font-medium hover:underline"
               >
-                {line.product.name}
+                {presentation.title}
               </Link>
               {line.size ? (
                 <p className="text-sm text-muted-foreground">Size: {line.size}</p>
@@ -208,8 +212,9 @@ function CartPage() {
                 <Trash2 className="size-4" />
               </Button>
             </div>
-          </li>
-        ))}
+            </li>
+          )
+        })}
       </ul>
 
       <div className="flex flex-col items-stretch gap-4 rounded-xl border bg-muted/30 p-6 sm:flex-row sm:items-center sm:justify-between">

@@ -1,5 +1,6 @@
 import type { PostHog } from 'posthog-js'
 import { captureWhenReady } from '~/lib/posthog-capture'
+import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
 import {
   logCartItemAdded,
   logCartItemRemoved,
@@ -20,9 +21,11 @@ function capture(
 }
 
 export function productProperties(product: Product) {
+  const presentation = getProductPresentation(product)
+
   return {
     product_id: product.id,
-    product_name: product.name,
+    product_name: presentation.title,
     category: product.category,
     price: product.price,
     currency: 'USD',
@@ -39,7 +42,7 @@ export function capturePdpViewed(
     ...COMMERCE,
     ...productProperties(product),
     page_type: 'pdp',
-    path: `/products/${product.id}`,
+    path: `/products/${getProductSlug(product)}`,
     featured: product.featured,
     tags: product.tags,
     source: options?.source ?? 'direct',
@@ -119,7 +122,7 @@ export function captureProductListingClicked(
     ...COMMERCE,
     ...productProperties(product),
     page_type: 'listing',
-    destination_path: `/products/${product.id}`,
+    destination_path: `/products/${getProductSlug(product)}`,
   }))
 }
 

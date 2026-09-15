@@ -1,9 +1,10 @@
-import { Link, createFileRoute, notFound } from '@tanstack/react-router'
+import { Link, Navigate, createFileRoute, notFound } from '@tanstack/react-router'
 import { useFeatureFlagVariantKey, usePostHog } from '@posthog/react'
 import { useEffect, useRef, useState } from 'react'
 import { Minus, Plus, ShoppingCart } from 'lucide-react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { PageShell } from '~/components/PageShell'
+import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { captureAddToCart, capturePdpViewed } from '~/lib/analytics'
@@ -25,11 +26,16 @@ export const Route = createFileRoute('/products/$productId')({
 
 function ProductPage() {
   const { productId } = Route.useParams()
-  const { getProductById } = useCatalog()
-  const product = getProductById(productId)
+  const { getProductById, products } = useCatalog()
+  const product = products.find((item) => getProductSlug(item) === productId) ?? getProductById(productId)
 
   if (!product) {
     throw notFound()
+  }
+
+  const canonicalProductId = getProductSlug(product)
+  if (productId !== canonicalProductId) {
+    return <Navigate to="/products/$productId" params={{ productId: canonicalProductId }} replace />
   }
 
   return <ProductDetails product={product} />
@@ -50,6 +56,7 @@ function ProductDetails({ product }: { product: Product }) {
       : 'Add to cart'
   const [cartError, setCartError] = useState<string | null>(null)
   const viewedRef = useRef<string | null>(null)
+  const presentation = getProductPresentation(product)
 
   useEffect(() => {
     if (viewedRef.current === product.id) return
@@ -102,24 +109,30 @@ function ProductDetails({ product }: { product: Product }) {
       <AppBreadcrumbs
         items={[
           { label: product.category },
-          { label: product.name },
+          { label: presentation.title },
         ]}
       />
       <div className="grid gap-10 lg:grid-cols-2">
-        <div className="mx-auto flex aspect-[4/3] max-h-72 w-full max-w-sm items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 text-6xl sm:text-7xl lg:mx-0 dark:from-amber-950/40 dark:to-emerald-950/40">
-          {product.emoji}
+        <div className={`relative mx-auto flex aspect-[4/3] max-h-72 w-full max-w-sm items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br p-6 ${presentation.theme} lg:mx-0`}>
+          <div className="absolute -top-12 -right-8 size-36 rounded-full bg-white/35" />
+          <div className="absolute -bottom-16 -left-10 size-44 rounded-full bg-white/25" />
+          <img
+            src={presentation.hoggie}
+            alt=""
+            className="relative z-10 size-44 object-contain drop-shadow-[0_12px_10px_rgba(29,31,39,0.18)] sm:size-52"
+          />
         </div>
 
         <div className="space-y-6">
           <div className="space-y-2">
             <Badge variant="secondary">{product.category}</Badge>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              {product.name}
+              {presentation.title}
             </h1>
             <p className="text-3xl font-semibold text-primary">
               {formatPrice(product.price)}
             </p>
-            <p className="text-muted-foreground">{product.description}</p>
+            <p className="text-muted-foreground">{presentation.description}</p>
           </div>
 
           <div className="flex flex-wrap gap-2">

@@ -3,6 +3,7 @@ import { usePostHog } from '@posthog/react'
 import { Pencil, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
+import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
 import { ProductForm } from '~/components/admin/ProductForm'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -36,7 +37,9 @@ function AdminIndexPage() {
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const sorted = [...products].sort((a, b) => a.name.localeCompare(b.name))
+  const sorted = [...products].sort((a, b) =>
+    getProductPresentation(a).title.localeCompare(getProductPresentation(b).title),
+  )
 
   function handleCreate(state: Parameters<typeof formStateToProduct>[0]) {
     setError(null)
@@ -142,15 +145,19 @@ function AdminIndexPage() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {sorted.map((product) => (
-                <tr key={product.id} className="hover:bg-muted/30">
+              {sorted.map((product) => {
+                const presentation = getProductPresentation(product)
+
+                return (
+                  <tr key={product.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-xl">{product.emoji}</span>
+                      <img src={presentation.hoggie} alt="" className="size-9 object-contain" />
                       <div>
-                        <p className="font-medium">{product.name}</p>
+                        <p className="font-medium">{presentation.title}</p>
+                        <p className="text-xs text-muted-foreground">{presentation.description}</p>
                         <p className="font-mono text-xs text-muted-foreground">
-                          {product.id}
+                          /products/{getProductSlug(product)}
                         </p>
                       </div>
                     </div>
@@ -179,8 +186,9 @@ function AdminIndexPage() {
                       </Link>
                     </Button>
                   </td>
-                </tr>
-              ))}
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
           {sorted.length === 0 ? (
