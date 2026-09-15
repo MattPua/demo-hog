@@ -193,6 +193,8 @@ export function ProductCard({
 
   function handleQuickAdd() {
     const size = product.sizes[0]
+    if (size) return
+
     addItem(product.id, 1, size)
     toast.success(`${presentation.title} added to cart`)
     captureAddToCart(posthog, product, {
