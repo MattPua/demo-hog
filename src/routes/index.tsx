@@ -1,11 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useFeatureFlagVariantKey, usePostHog } from '@posthog/react'
 import { useEffect, useMemo, useState } from 'react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { CategoryFilter } from '~/components/CategoryFilter'
 import { PageShell } from '~/components/PageShell'
-import { ProductCard } from '~/components/ProductCard'
+import { getProductPresentation, getProductSlug, ProductCard } from '~/components/ProductCard'
 import { SearchBar } from '~/components/SearchBar'
 import { Badge } from '~/components/ui/badge'
+import { Button } from '~/components/ui/button'
 import { captureProductsSearched } from '~/lib/analytics'
 import { useCatalog } from '~/lib/catalog-context'
 import { logStoreContext } from '~/lib/console-context'
@@ -14,6 +16,7 @@ import {
   HOME_GRID_VARIANTS,
 } from '~/lib/demo-flags'
 import { cn } from '~/lib/utils'
+import { formatPrice } from '~/lib/products'
 
 export const Route = createFileRoute('/')({
   component: ShopPage,
@@ -59,6 +62,19 @@ function ShopPage() {
   }, [query, category, filtered.length, posthog])
 
   const showFeatured = !query && !category
+  const featuredProduct = products.find((product) => product.featured) ?? products[0]
+  const featuredPresentation = featuredProduct
+    ? getProductPresentation(featuredProduct)
+    : null
+
+  function captureFeaturedBannerClick() {
+    if (!featuredProduct) return
+    posthog.capture('featured_banner_clicked', {
+      product_id: featuredProduct.id,
+      product_name: featuredPresentation?.title,
+      placement: 'home',
+    })
+  }
 
   return (
     <PageShell className="space-y-8 py-6">
@@ -75,6 +91,50 @@ function ShopPage() {
         </div>
         <SearchBar value={query} onChange={setQuery} className="max-w-md" />
       </section>
+
+      {showFeatured && featuredProduct && featuredPresentation ? (
+        <section className="relative overflow-hidden rounded-3xl bg-[linear-gradient(115deg,var(--posthog-purple)_0%,var(--posthog-blue)_52%,var(--posthog-tangerine)_100%)] px-6 py-8 text-white shadow-lg sm:px-10 sm:py-12">
+          <div className="absolute inset-y-0 right-0 w-1/2 bg-white/8 [clip-path:polygon(35%_0,100%_0,100%_100%,0_100%)]" />
+          <div className="absolute -top-24 -right-12 size-72 rounded-full bg-[var(--posthog-lemon)]/50 blur-3xl" />
+          <div className="relative grid items-center gap-8 md:grid-cols-[1fr_280px]">
+            <div className="max-w-xl space-y-5">
+              <Badge className="border-0 bg-white/15 text-white hover:bg-white/15">
+                <Sparkles className="size-3.5" />
+                Featured find
+              </Badge>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-white/75">Made for late-night foraging</p>
+                <h2 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+                  {featuredPresentation.title}
+                </h2>
+                <p className="max-w-lg text-base leading-relaxed text-white/80 sm:text-lg">
+                  {featuredProduct.description}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button asChild size="lg" className="bg-white text-[var(--posthog-purple)] shadow-none hover:bg-white/90">
+                  <Link
+                    to="/products/$productId"
+                    params={{ productId: getProductSlug(featuredProduct) }}
+                    onClick={captureFeaturedBannerClick}
+                  >
+                    Shop featured item
+                    <ArrowRight className="size-4" />
+                  </Link>
+                </Button>
+                <span className="text-xl font-semibold">{formatPrice(featuredProduct.price)}</span>
+              </div>
+            </div>
+            <div className="relative mx-auto flex aspect-square w-full max-w-64 items-center justify-center rounded-full border border-white/25 bg-white/12 backdrop-blur-sm md:max-w-70">
+              <img
+                src={featuredPresentation.hoggie}
+                alt=""
+                className="size-48 object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.25)] sm:size-56"
+              />
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="space-y-4">
         <CategoryFilter
