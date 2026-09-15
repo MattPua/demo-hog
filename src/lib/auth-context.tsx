@@ -258,7 +258,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user_id: user?.id ?? null,
     })
     writeSession(null)
-    setUser(null)
     if (isPostHogReady(posthog)) {
       captureWhenReady(posthog, (client) => {
         client.capture('user_signed_out')

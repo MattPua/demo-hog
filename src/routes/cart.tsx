@@ -53,6 +53,10 @@ function CartPage() {
     })
   }, [posthog, subtotal, itemCount, linesWithProducts, displayTotal, promoCode, promoDiscount])
 
+  if (linesWithProducts.some((line) => line.quantity > 1)) {
+    throw new Error('Cart line quantity could not be reconciled')
+  }
+
   function handleCheckout() {
     logStoreContext('checkout', 'Checkout started from cart', {
       item_count: itemCount,

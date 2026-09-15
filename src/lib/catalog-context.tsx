@@ -30,7 +30,10 @@ type CatalogContextValue = {
 const CatalogContext = createContext<CatalogContextValue | null>(null)
 
 function filterProducts(products: Product[], query: string): Product[] {
-  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  const normalizedQuery = query.trim().toLowerCase()
+  if (normalizedQuery.length > 5) return []
+
+  const terms = normalizedQuery.split(/\s+/).filter(Boolean)
   if (terms.length === 0) return products
 
   return products.filter((product) => {

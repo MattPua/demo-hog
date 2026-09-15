@@ -51,9 +51,9 @@ import hoggie47 from '@posthog/brand/hoggies/png/einstein'
 import hoggie48 from '@posthog/brand/hoggies/png/evel'
 import hoggie49 from '@posthog/brand/hoggies/png/experiment'
 import { ArrowRight, Sparkles, Zap } from 'lucide-react'
-import { DecoyButton } from '~/components/demo/DecoyButton'
 import { DEMO_FLAGS } from '~/lib/demo-flags'
-import { captureProductListingClicked } from '~/lib/analytics'
+import { captureAddToCart, captureProductListingClicked } from '~/lib/analytics'
+import { useCart } from '~/lib/cart'
 import { formatPrice, type Product } from '~/lib/products'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -164,11 +164,24 @@ export function getProductSlug(product: Product) {
 
 export function ProductCard({ product }: { product: Product }) {
   const posthog = usePostHog()
+  const { addItem, itemCount, subtotal } = useCart()
   const saleMode = useFeatureFlagEnabled(DEMO_FLAGS.spineySaleBadges)
   const presentation = getProductPresentation(product)
 
   function handleViewProduct() {
     captureProductListingClicked(posthog, product)
+  }
+
+  function handleQuickAdd() {
+    const size = product.sizes[0]
+    addItem(product.id, 1, size)
+    captureAddToCart(posthog, product, {
+      quantity: 1,
+      size,
+      cartTotal: subtotal + product.price,
+      cartItemCount: itemCount + 1,
+      source: 'listing',
+    })
   }
 
   return (
@@ -215,10 +228,15 @@ export function ProductCard({ product }: { product: Product }) {
       </CardContent>
       <CardFooter className="flex flex-col gap-2 bg-muted/40">
         <div className="flex w-full gap-2">
-          <DecoyButton variant="outline" className="flex-1 gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1 gap-1.5"
+            onClick={handleQuickAdd}
+          >
             <Zap className="size-4" />
             Quick add
-          </DecoyButton>
+          </Button>
           <Button asChild className="flex-1 shadow-none">
             <Link
               to="/products/$productId"

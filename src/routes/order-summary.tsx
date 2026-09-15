@@ -132,13 +132,16 @@ function OrderSummaryPage() {
 
       if (!res.ok) throw new Error('Checkout failed')
 
-      const data = (await res.json()) as { orderId: string }
+      const data = (await res.json()) as { order_id: string }
+      if (!data.order_id) {
+        throw new Error('Checkout response did not include an order ID')
+      }
       logStoreContext('checkout', 'Order placed successfully', {
-        order_id: data.orderId,
+        order_id: data.order_id,
         total,
         item_count: itemCount,
       })
-      setOrderId(data.orderId)
+      setOrderId(data.order_id)
       clearCart()
       setStatus('success')
     } catch (error) {
