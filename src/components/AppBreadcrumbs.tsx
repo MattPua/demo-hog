@@ -15,6 +15,7 @@ export type BreadcrumbCrumb = {
   /** Omit on the current (last) page. */
   to?: string
   params?: Record<string, string>
+  href?: string
 }
 
 type AppBreadcrumbsProps = {
@@ -38,6 +39,10 @@ export function AppBreadcrumbs({ items, className }: AppBreadcrumbsProps) {
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                ) : crumb.href ? (
+                  <BreadcrumbLink asChild>
+                    <a href={crumb.href}>{crumb.label}</a>
+                  </BreadcrumbLink>
                 ) : crumb.to ? (
                   <BreadcrumbLink asChild>
                     <Link to={crumb.to} params={crumb.params}>

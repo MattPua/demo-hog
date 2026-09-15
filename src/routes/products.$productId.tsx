@@ -99,7 +99,7 @@ function ProductDetails({
     <PageShell>
       <AppBreadcrumbs
         items={[
-          { label: product.category },
+          { label: product.category, href: `/?category=${encodeURIComponent(product.category)}` },
           { label: presentation.title },
         ]}
       />

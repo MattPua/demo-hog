@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useLocation } from '@tanstack/react-router'
 import { useFeatureFlagVariantKey, usePostHog } from '@posthog/react'
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, Sparkles } from 'lucide-react'
@@ -23,12 +23,15 @@ export const Route = createFileRoute('/')({
 })
 
 function ShopPage() {
+  const { searchStr } = useLocation()
   const posthog = usePostHog()
   const gridVariant = useFeatureFlagVariantKey(DEMO_FLAGS.homeGridLayout)
   const spaciousGrid = gridVariant === HOME_GRID_VARIANTS.spacious
   const { products, categories, searchProducts } = useCatalog()
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState<string | null>(null)
+  const [category, setCategory] = useState<string | null>(
+    new URLSearchParams(searchStr).get('category'),
+  )
   const [tag, setTag] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
