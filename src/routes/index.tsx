@@ -29,17 +29,21 @@ function ShopPage() {
   const { products, categories, searchProducts } = useCatalog()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string | null>(null)
+  const [tag, setTag] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     let list = searchProducts(query)
     if (category) {
       list = list.filter((p) => p.category === category)
     }
+    if (tag) {
+      list = list.filter((p) => p.tags.includes(tag))
+    }
     return list
-  }, [query, category, searchProducts])
+  }, [query, category, tag, searchProducts])
 
   useEffect(() => {
-    if (!query.trim() && !category) return
+    if (!query.trim() && !category && !tag) return
 
     const timer = window.setTimeout(() => {
       const tokens = query.trim().split(/\s+/).filter(Boolean)
@@ -48,6 +52,7 @@ function ShopPage() {
         tokens,
         effective_token: tokens.length > 1 ? tokens.at(-1) : tokens[0] ?? '',
         category,
+        tag,
         results_count: filtered.length,
         has_results: filtered.length > 0,
       })
@@ -59,9 +64,9 @@ function ShopPage() {
     }, 400)
 
     return () => window.clearTimeout(timer)
-  }, [query, category, filtered.length, posthog])
+  }, [query, category, tag, filtered.length, posthog])
 
-  const showFeatured = !query && !category
+  const showFeatured = !query && !category && !tag
   const featuredProduct = products.find((product) => product.featured) ?? products[0]
   const featuredPresentation = featuredProduct
     ? getProductPresentation(featuredProduct)
@@ -89,7 +94,14 @@ function ShopPage() {
             adventures. Catalog data lives in your browser via IndexedDB.
           </p>
         </div>
-        <SearchBar value={query} onChange={setQuery} className="max-w-md" />
+        <SearchBar
+          value={query}
+          onChange={(nextQuery) => {
+            setQuery(nextQuery)
+            if (nextQuery) setTag(null)
+          }}
+          className="max-w-md"
+        />
       </section>
 
       {showFeatured && featuredProduct && featuredPresentation ? (
@@ -140,12 +152,25 @@ function ShopPage() {
         <CategoryFilter
           categories={categories}
           value={category}
-          onChange={setCategory}
+          onChange={(nextCategory) => {
+            setCategory(nextCategory)
+            if (nextCategory) setTag(null)
+          }}
         />
+
+        {tag ? (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Tag:</span>
+            <Button type="button" variant="secondary" size="sm" onClick={() => setTag(null)}>
+              {tag} ×
+            </Button>
+          </div>
+        ) : null}
 
         <p className="text-sm text-muted-foreground">
           {filtered.length} product{filtered.length === 1 ? '' : 's'}
           {query ? ` matching “${query}”` : ''}
+          {tag ? ` tagged “${tag}”` : ''}
         </p>
 
         {filtered.length === 0 ? (
@@ -160,7 +185,14 @@ function ShopPage() {
             )}
           >
             {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onTagClick={(selectedTag) => {
+                  setQuery('')
+                  setTag(selectedTag)
+                }}
+              />
             ))}
           </div>
         )}
@@ -182,7 +214,14 @@ function ShopPage() {
               .filter((p) => p.featured)
               .slice(0, 4)
               .map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onTagClick={(selectedTag) => {
+                    setQuery('')
+                    setTag(selectedTag)
+                  }}
+                />
               ))}
           </div>
         </section>

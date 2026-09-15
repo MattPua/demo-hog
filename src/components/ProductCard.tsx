@@ -162,7 +162,13 @@ export function getProductSlug(product: Product) {
     .replace(/^-|-$/g, '')
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  onTagClick,
+}: {
+  product: Product
+  onTagClick?: (tag: string) => void
+}) {
   const posthog = usePostHog()
   const { addItem, itemCount, subtotal } = useCart()
   const saleMode = useFeatureFlagEnabled(DEMO_FLAGS.spineySaleBadges)
@@ -182,6 +188,15 @@ export function ProductCard({ product }: { product: Product }) {
       cartItemCount: itemCount + 1,
       source: 'listing',
     })
+  }
+
+  function handleTagClick(tag: string) {
+    posthog.capture('product_tag_clicked', {
+      product_id: product.id,
+      tag,
+      placement: 'product_card',
+    })
+    onTagClick?.(tag)
   }
 
   return (
@@ -224,7 +239,18 @@ export function ProductCard({ product }: { product: Product }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="mt-auto pt-0">
-        <p className="text-sm text-muted-foreground">{product.tags.slice(0, 2).join(' · ')}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {product.tags.slice(0, 2).map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+              onClick={() => handleTagClick(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
       </CardContent>
       <CardFooter className="flex flex-col gap-2 bg-muted/40">
         <div className="flex w-full gap-2">
