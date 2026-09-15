@@ -144,6 +144,9 @@ const tagThemes = [
   'bg-[var(--posthog-green-lighter)] text-[var(--posthog-green-darker)] hover:bg-[var(--posthog-green)]',
   'bg-[var(--posthog-purple-lighter)] text-[var(--posthog-purple-darker)] hover:bg-[var(--posthog-purple)]',
   'bg-[var(--posthog-coral-lighter)] text-[var(--posthog-coral-darker)] hover:bg-[var(--posthog-coral)]',
+  'bg-[var(--posthog-teal-lighter)] text-[var(--posthog-teal-darker)] hover:bg-[var(--posthog-teal)]',
+  'bg-[var(--posthog-violet-lighter)] text-[var(--posthog-violet-darker)] hover:bg-[var(--posthog-violet)]',
+  'bg-[var(--posthog-tangerine-lighter)] text-[var(--posthog-tangerine-darker)] hover:bg-[var(--posthog-tangerine)]',
 ] as const
 
 function hashProductId(id: string) {
@@ -249,13 +252,13 @@ export function ProductCard({
       </CardHeader>
       <CardContent className="mt-auto pt-0">
         <div className="flex flex-wrap gap-1.5">
-          {product.tags.slice(0, 2).map((tag, index) => (
+          {product.tags.map((tag) => (
             <button
               key={tag}
               type="button"
               className={cn(
                 'rounded-full px-2 py-1 text-xs font-medium transition-colors',
-                tagThemes[index % tagThemes.length],
+                tagThemes[hashProductId(tag) % tagThemes.length],
               )}
               onClick={() => handleTagClick(tag)}
             >
