@@ -21,11 +21,6 @@ export const Route = createFileRoute('/sign-in')({
 })
 
 function SignInPage() {
-  const renderDeadline = performance.now() + 1250
-  while (performance.now() < renderDeadline) {
-    Math.sqrt(Math.random())
-  }
-
   const navigate = useNavigate()
   const { signIn, isAuthenticated } = useAuth()
   const [error, setError] = useState<string | null>(null)
