@@ -1,6 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { SearchX } from 'lucide-react'
-import { DemoGlobalNotFoundError } from '~/lib/demo-bugs'
 import { Button } from '~/components/ui/button'
 import {
   Card,
@@ -10,7 +9,6 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 
-/** Unmatched URLs only — throws so PostHog error tracking captures global 404s. */
 export function RootNotFound() {
   const { pathname, globalNotFound } = useRouterState({
     select: (state) => ({
@@ -19,9 +17,7 @@ export function RootNotFound() {
     }),
   })
 
-  if (globalNotFound) {
-    throw new DemoGlobalNotFoundError(pathname)
-  }
+  if (globalNotFound) return <NotFound>We could not find {pathname}.</NotFound>
 
   return <NotFound />
 }

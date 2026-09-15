@@ -15,11 +15,6 @@ import {
   CardTitle,
 } from '~/components/ui/card'
 import { captureProductCreated } from '~/lib/analytics'
-import {
-  assertAdminCanCreateProduct,
-  DEMO_MAX_CATALOG_PRODUCTS,
-} from '~/lib/demo-bugs'
-import { logCommerceError } from '~/lib/posthog-logs'
 import { putProduct } from '~/lib/catalog-db'
 import { useCatalog } from '~/lib/catalog-context'
 import { formStateToProduct } from '~/lib/product-form'
@@ -53,15 +48,6 @@ function AdminIndexPage() {
       setError(`Product ID “${result.id}” already exists.`)
       return
     }
-
-    logCommerceError(posthog, 'Admin create product blocked by catalog sync', {
-      product_id: result.id,
-      product_count: products.length,
-      max_products: DEMO_MAX_CATALOG_PRODUCTS,
-    })
-
-    // Intentional demo bug: throws when catalog already has 50 products.
-    assertAdminCanCreateProduct(products.length, result.id)
 
     void saveNewProduct(result)
   }

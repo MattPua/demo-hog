@@ -11,17 +11,8 @@ import {
 import { useAuth } from '~/lib/auth-context'
 import { useCatalog } from '~/lib/catalog-context'
 import { getCartLines, saveCartLines, type CartLine } from '~/lib/cart-db'
-import { logStoreContext, warnStoreContext } from '~/lib/console-context'
-import {
-  DEMO_CART_MAX_UNITS,
-  buggedCartAfterSignIn,
-  buggedCartSubtotal,
-  buggedCheckoutTotal,
-  calculatePromoDiscount,
-  getCartUnitCount,
-  shouldBlockQuantityIncrease,
-  wouldExceedCartCapacity,
-} from '~/lib/demo-bugs'
+import { logStoreContext } from '~/lib/console-context'
+import { calculatePromoDiscount } from '~/lib/promotions'
 import type { Product } from '~/lib/products'
 
 export type { CartLine } from '~/lib/cart-db'
@@ -32,7 +23,6 @@ type CartContextValue = {
   ready: boolean
   lines: CartLine[]
   addItem: (productId: string, quantity: number, size?: string) => void
-  cartAtCapacity: boolean
   removeItem: (productId: string, size?: string) => void
   updateQuantity: (productId: string, quantity: number, size?: string) => void
   clearCart: () => void
@@ -51,6 +41,10 @@ const CartContext = createContext<CartContextValue | null>(null)
 
 function lineKey(productId: string, size?: string) {
   return `${productId}::${size ?? ''}`
+}
+
+function getCartUnitCount(lines: { quantity: number }[]): number {
+  return lines.reduce((sum, line) => sum + line.quantity, 0)
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -89,7 +83,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     saveCartLines(lines).catch(() => {})
   }, [lines, ready])
 
-  // Intentional demo bug: signing in drops the first cart line.
   useEffect(() => {
     if (!authReady || !ready) return
 
@@ -103,16 +96,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     if (wasLoggedOut && user !== null) {
       setLines((prev) => {
-        const next = buggedCartAfterSignIn(prev)
         logStoreContext('cart', 'Cart merged after sign-in', {
           user_id: user.id,
           lines_before: prev.length,
-          lines_after: next.length,
+          lines_after: prev.length,
           units_before: getCartUnitCount(prev),
-          units_after: getCartUnitCount(next),
-          dropped_product_id: prev[0]?.productId,
+          units_after: getCartUnitCount(prev),
         })
-        return next
+        return prev
       })
     }
   }, [user, authReady, ready])
@@ -120,17 +111,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback(
     (productId: string, quantity: number, size?: string) => {
       setLines((prev) => {
-        const currentUnits = getCartUnitCount(prev)
-        if (wouldExceedCartCapacity(currentUnits, quantity)) {
-          warnStoreContext('cart', 'Add to cart blocked — at capacity', {
-            product_id: productId,
-            quantity,
-            unit_count: currentUnits,
-            max_units: DEMO_CART_MAX_UNITS,
-          })
-          return prev
-        }
-
         const key = lineKey(productId, size)
         const existing = prev.find(
           (l) => lineKey(l.productId, l.size) === key,
@@ -180,14 +160,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const key = lineKey(productId, size)
       setLines((prev) => {
-        const otherUnits = getCartUnitCount(
-          prev.filter((l) => lineKey(l.productId, l.size) !== key),
-        )
-
-        if (shouldBlockQuantityIncrease(otherUnits, quantity)) {
-          return prev
-        }
-
         return prev.map((l) =>
           lineKey(l.productId, l.size) === key ? { ...l, quantity } : l,
         )
@@ -223,8 +195,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   )
 
   const subtotal = useMemo(
-    () => buggedCartSubtotal(linesWithProducts, itemCount),
-    [linesWithProducts, itemCount],
+    () =>
+      linesWithProducts.reduce(
+        (sum, line) => sum + line.product.price * line.quantity,
+        0,
+      ),
+    [linesWithProducts],
   )
 
   const promoDiscount = useMemo(
@@ -237,10 +213,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [subtotal, promoDiscount],
   )
 
-  const checkoutTotal = useMemo(
-    () => buggedCheckoutTotal(subtotal, promoDiscount),
-    [subtotal, promoDiscount],
-  )
+  const checkoutTotal = displayTotal
 
   const applyPromo = useCallback(
     (code: string) => {
@@ -260,21 +233,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
         subtotal,
         promo_discount: discount,
         display_total: Math.max(0, subtotal - discount),
-        checkout_total: buggedCheckoutTotal(subtotal, discount),
+        checkout_total: Math.max(0, subtotal - discount),
       })
       return {}
     },
     [subtotal],
   )
 
-  const cartAtCapacity = itemCount >= DEMO_CART_MAX_UNITS
-
   const value = useMemo(
     () => ({
       ready,
       lines,
       addItem,
-      cartAtCapacity,
       removeItem,
       updateQuantity,
       clearCart,
@@ -292,7 +262,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       ready,
       lines,
       addItem,
-      cartAtCapacity,
       removeItem,
       updateQuantity,
       clearCart,

@@ -8,8 +8,7 @@ import { getProductPresentation } from '~/components/ProductCard'
 import { Button } from '~/components/ui/button'
 import { captureAppException, posthogRequestHeaders } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
-import { logStoreContext, warnStoreContext, errorStoreContext } from '~/lib/console-context'
-import { CheckoutValidationError, validateItemCountFormat } from '~/lib/demo-bugs'
+import { logStoreContext, errorStoreContext } from '~/lib/console-context'
 import { formatPrice } from '~/lib/products'
 import { useAuth } from '~/lib/auth-context'
 
@@ -84,45 +83,15 @@ function OrderSummaryPage() {
   async function placeOrder() {
     setCheckoutError(null)
 
-    const normalizedCount = Number(String(itemCount))
-    const validationPassed = validateItemCountFormat(itemCount)
-
     logStoreContext('checkout', 'Place order clicked', {
       user_id: user?.id ?? null,
       email: email || user?.email || null,
       item_count: itemCount,
-      normalized_count: normalizedCount,
-      validation_passed: validationPassed,
       display_total: displayTotal,
       checkout_total: checkoutTotal,
       promo_code: promoCode,
       promo_discount: promoDiscount,
     })
-
-    if (!validationPassed) {
-      const validationError = new CheckoutValidationError(
-        itemCount,
-        normalizedCount,
-      )
-      warnStoreContext('checkout', 'Pre-submit validation failed', {
-        item_count: itemCount,
-        normalized_count: normalizedCount,
-        expected_for_pass: itemCount - 1,
-      })
-      captureAppException(posthog, validationError, {
-        source: 'checkout_client',
-        stage: 'pre_submit_validation',
-        item_count: itemCount,
-        normalized_count: normalizedCount,
-        display_total: displayTotal,
-        checkout_total: checkoutTotal,
-        promo_code: promoCode,
-      })
-      setCheckoutError(
-        'Unable to place your order right now. Please review your cart and try again.',
-      )
-      return
-    }
 
     setStatus('loading')
     try {
@@ -180,6 +149,7 @@ function OrderSummaryPage() {
         checkout_total: checkoutTotal,
       })
       captureAppException(posthog, error, { source: 'checkout_client' })
+      setCheckoutError('Unable to place your order right now. Please try again.')
     }
   }
 

@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { assertCheckoutCapacity } from '~/lib/demo-bugs'
 import { logStoreContext, errorStoreContext } from '~/lib/console-context'
 import { getPostHogClient } from '~/utils/posthog-server'
 import { emitServerLog } from '~/utils/posthog-server-logs'
@@ -62,9 +61,6 @@ export const Route = createFileRoute('/api/checkout')({
             total: body.total,
             line_items: body.items.length,
           })
-
-          // Intentional demo bug: checkout rejects carts over the legacy unit cap.
-          assertCheckoutCapacity(body.item_count)
 
           const orderId = `QC-${Date.now().toString(36).toUpperCase()}`
 

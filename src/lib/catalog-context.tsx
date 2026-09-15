@@ -14,7 +14,6 @@ import {
   getProductById as getProductByIdFromDb,
   type Product,
 } from '~/lib/catalog-db'
-import { buggedFilterProducts } from '~/lib/demo-bugs'
 
 type CatalogStatus = 'loading' | 'ready' | 'error'
 
@@ -29,6 +28,23 @@ type CatalogContextValue = {
 }
 
 const CatalogContext = createContext<CatalogContextValue | null>(null)
+
+function filterProducts(products: Product[], query: string): Product[] {
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (terms.length === 0) return products
+
+  return products.filter((product) => {
+    const haystack = [
+      product.name,
+      product.description,
+      product.category,
+      ...product.tags,
+    ]
+      .join(' ')
+      .toLowerCase()
+    return terms.every((term) => haystack.includes(term))
+  })
+}
 
 async function loadCatalog() {
   await ensureCatalogSeeded()
@@ -73,7 +89,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   )
 
   const searchProducts = useCallback(
-    (query: string) => buggedFilterProducts(products, query),
+    (query: string) => filterProducts(products, query),
     [products],
   )
 

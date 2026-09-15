@@ -15,7 +15,7 @@ import {
 } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
 import { logStoreContext, warnStoreContext } from '~/lib/console-context'
-import { assertCartCapacity, DEMO_PROMO_CODE } from '~/lib/demo-bugs'
+import { PROMO_CODE } from '~/lib/promotions'
 import { formatPrice } from '~/lib/products'
 
 export const Route = createFileRoute('/cart')({
@@ -52,9 +52,6 @@ function CartPage() {
       product_ids: linesWithProducts.map((line) => line.product.id),
     })
   }, [posthog, subtotal, itemCount, linesWithProducts, displayTotal, promoCode, promoDiscount])
-
-  // Intentional demo bug: opening the cart with >3 units crashes the page.
-  assertCartCapacity(itemCount)
 
   function handleCheckout() {
     logStoreContext('checkout', 'Checkout started from cart', {
@@ -117,7 +114,7 @@ function CartPage() {
           type="text"
           value={promoInput}
           onChange={(e) => setPromoInput(e.target.value)}
-          placeholder={`Promo code (try ${DEMO_PROMO_CODE})`}
+          placeholder={`Promo code (try ${PROMO_CODE})`}
           className="h-9 flex-1 rounded-lg border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
         <Button
