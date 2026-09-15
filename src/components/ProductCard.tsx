@@ -55,6 +55,7 @@ import { DEMO_FLAGS } from '~/lib/demo-flags'
 import { captureAddToCart, captureProductListingClicked } from '~/lib/analytics'
 import { useCart } from '~/lib/cart'
 import { formatPrice, type Product } from '~/lib/products'
+import { cn } from '~/lib/utils'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -135,6 +136,14 @@ const cardThemes = [
   'from-[var(--posthog-lemon-lighter)] via-[var(--posthog-lemon-lighter)] to-[var(--posthog-tangerine-lighter)]',
   'from-[var(--posthog-corn-blue-lighter)] via-[var(--posthog-blue-lighter)] to-[var(--posthog-violet-lighter)]',
   'from-[var(--posthog-teal-lighter)] via-[var(--posthog-green-lighter)] to-[var(--posthog-lime-lighter)]',
+] as const
+
+const tagThemes = [
+  'bg-[var(--posthog-lemon-lighter)] text-[var(--posthog-lemon-darker)] hover:bg-[var(--posthog-lemon)]',
+  'bg-[var(--posthog-blue-lighter)] text-[var(--posthog-blue-darker)] hover:bg-[var(--posthog-blue)]',
+  'bg-[var(--posthog-green-lighter)] text-[var(--posthog-green-darker)] hover:bg-[var(--posthog-green)]',
+  'bg-[var(--posthog-purple-lighter)] text-[var(--posthog-purple-darker)] hover:bg-[var(--posthog-purple)]',
+  'bg-[var(--posthog-coral-lighter)] text-[var(--posthog-coral-darker)] hover:bg-[var(--posthog-coral)]',
 ] as const
 
 function hashProductId(id: string) {
@@ -240,11 +249,14 @@ export function ProductCard({
       </CardHeader>
       <CardContent className="mt-auto pt-0">
         <div className="flex flex-wrap gap-1.5">
-          {product.tags.slice(0, 2).map((tag) => (
+          {product.tags.slice(0, 2).map((tag, index) => (
             <button
               key={tag}
               type="button"
-              className="rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground"
+              className={cn(
+                'rounded-full px-2 py-1 text-xs font-medium transition-colors',
+                tagThemes[index % tagThemes.length],
+              )}
               onClick={() => handleTagClick(tag)}
             >
               {tag}
