@@ -1,11 +1,25 @@
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+import {
+  Link,
+  Navigate,
+  Outlet,
+  createFileRoute,
+  redirect,
+} from '@tanstack/react-router'
 import { Settings } from 'lucide-react'
 import { PageShell } from '~/components/PageShell'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
-import { useAuth } from '~/lib/auth-context'
+import { readSession, useAuth } from '~/lib/auth-context'
 
 export const Route = createFileRoute('/admin')({
+  beforeLoad: () => {
+    // Auth lives in the browser (localStorage session), so only guard on the
+    // client. On the server readSession() is always null; redirecting there
+    // would bounce signed-in people whose session the server cannot see.
+    if (typeof window !== 'undefined' && !readSession()) {
+      throw redirect({ to: '/sign-in' })
+    }
+  },
   component: AdminLayout,
 })
 
@@ -17,7 +31,7 @@ function AdminLayout() {
   }
 
   if (!isAuthenticated) {
-    throw new Error('You must be signed in to access the admin area.')
+    return <Navigate to="/sign-in" />
   }
 
   return (
