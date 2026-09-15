@@ -3,7 +3,7 @@ import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 
 export const authInputClass =
-  'h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50'
+  'h-10 w-full rounded-lg border border-input bg-muted/70 px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:bg-background focus-visible:ring-3 focus-visible:ring-ring/50'
 
 export const authLabelClass = 'text-sm font-medium'
 
