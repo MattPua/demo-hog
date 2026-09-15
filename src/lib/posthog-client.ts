@@ -1,7 +1,27 @@
-import type { PostHog, PostHogConfig } from 'posthog-js'
+import type { BeforeSendFn, PostHog, PostHogConfig } from 'posthog-js'
 
 const DEFAULT_INGEST_HOST = 'https://us.i.posthog.com'
 const DEFAULT_UI_HOST = 'https://us.posthog.com'
+
+/** True when the app runs on a local development host. */
+function isLocalDevelopment(): boolean {
+  if (import.meta.env.DEV) return true
+  if (typeof window === 'undefined') return false
+  const { hostname } = window.location
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]'
+}
+
+/**
+ * Drop exception events raised on a local development host. Their stack frames
+ * point at the Vite dev pre-bundle cache (a local URL), so they can never
+ * symbolicate and only add unresolvable issues to error tracking.
+ */
+const dropLocalDevelopmentExceptions: BeforeSendFn = (event) => {
+  if (event?.event === '$exception' && isLocalDevelopment()) {
+    return null
+  }
+  return event
+}
 
 export function getPostHogProjectToken(): string | undefined {
   const token = import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN
@@ -27,6 +47,7 @@ export function getPostHogClientOptions(): Partial<PostHogConfig> {
     capture_pageview: false,
     capture_pageleave: true,
     capture_exceptions: true,
+    before_send: dropLocalDevelopmentExceptions,
     disable_session_recording: false,
     session_recording: {
       maskAllInputs: false,
