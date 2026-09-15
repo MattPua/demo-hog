@@ -110,7 +110,7 @@ export function AppHeader() {
   const { user, isAuthenticated, signOut } = useAuth()
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-50 border-b bg-card/95 shadow-xs backdrop-blur supports-[backdrop-filter]:bg-card/85">
       <FreeShippingBanner />
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4">
         <Link
