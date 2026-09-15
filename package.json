@@ -15,6 +15,7 @@
     "@opentelemetry/exporter-logs-otlp-http": "^0.218.0",
     "@opentelemetry/resources": "^2.7.1",
     "@opentelemetry/sdk-logs": "^0.218.0",
+    "@posthog/brand": "^0.12.1",
     "@posthog/react": "^1.9.0",
     "@tanstack/react-router": "^1.170.7",
     "@tanstack/react-router-devtools": "^1.167.0",

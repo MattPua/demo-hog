@@ -22,6 +22,8 @@ import {
 } from '~/lib/posthog-client'
 import { AuthProvider } from '~/lib/auth-context'
 import { ThemeProvider } from '~/lib/theme'
+import { colorsCss } from '@posthog/brand/colors/css'
+import { BrandFonts } from '~/components/BrandFonts'
 import appCss from '~/styles/app.css?url'
 import { seo } from '~/utils/seo'
 
@@ -88,6 +90,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
   const app = (
     <>
+          <style>{colorsCss}</style>
+          <BrandFonts />
           <PostHogErrorBoundary
             fallback={PostHogErrorFallback}
             additionalProperties={{ source: 'react_error_boundary' }}

@@ -18,6 +18,7 @@ import { Separator } from '~/components/ui/separator'
 import { useAuth } from '~/lib/auth-context'
 import { useCart } from '~/lib/cart'
 import { cn } from '~/lib/utils'
+import { Logo } from '@posthog/brand/logo'
 
 const navItems = [
   { to: '/', label: 'Shop', icon: Home, exact: true },
@@ -116,9 +117,7 @@ export function AppHeader() {
           to="/"
           className="flex items-center gap-2 font-semibold tracking-tight transition-opacity hover:opacity-80"
         >
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xl text-primary-foreground">
-            🦔
-          </span>
+          <Logo.Logomark size={32} title="Quill & Co." />
           <span className="hidden sm:inline">Quill & Co.</span>
         </Link>
 

@@ -23,6 +23,9 @@ importers:
       '@opentelemetry/sdk-logs':
         specifier: ^0.218.0
         version: 0.218.0(@opentelemetry/api@1.9.1)
+      '@posthog/brand':
+        specifier: ^0.12.1
+        version: 0.12.1(react@19.2.6)
       '@posthog/react':
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.2.15)(posthog-js@1.374.3)(react@19.2.6)
@@ -518,6 +521,15 @@ packages:
 
   '@oxc-project/types@0.132.0':
     resolution: {integrity: sha512-FESMOxil5Se014ui/Eq8fT5uHJo6nIRwH0PfJrZJXs6Gek3ZVFOrpUv3YIZT20m+extU98Hg1Ym72U58rlsxUQ==}
+
+  '@posthog/brand@0.12.1':
+    resolution: {integrity: sha512-+be20aMf8NVPUZf33x1PcKao1bDC+G5RXyV5QXoIbq7Xd8R/hIHxnyaEzrjIQzaP+KyaWWSVxrRSew8rG+qukw==}
+    engines: {node: '>=22.18'}
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@posthog/core@1.29.6':
     resolution: {integrity: sha512-qLA/4xTzxG1FabliYjsOy5pTC9XZWA225MHnpCmqGBoDVGL4sKKgLixMK2dpsHZbSo6AHpBLUfqkvTsh2YxZcQ==}
@@ -4034,6 +4046,10 @@ snapshots:
   '@oxc-project/types@0.130.0': {}
 
   '@oxc-project/types@0.132.0': {}
+
+  '@posthog/brand@0.12.1(react@19.2.6)':
+    optionalDependencies:
+      react: 19.2.6
 
   '@posthog/core@1.29.6':
     dependencies:

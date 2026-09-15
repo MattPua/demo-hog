@@ -8,7 +8,7 @@ export function FreeShippingBanner() {
   if (enabled !== true) return null
 
   return (
-    <div className="border-b border-emerald-200 bg-emerald-50 px-4 py-2 text-center text-sm font-medium text-emerald-900 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-100">
+    <div className="border-b border-[var(--posthog-teal-darker)]/30 bg-[var(--posthog-teal-lighter)] px-4 py-2 text-center text-sm font-medium text-foreground dark:bg-[var(--posthog-teal-darker)]/30">
       <span className="inline-flex items-center justify-center gap-2">
         <Truck className="size-4" />
         Free hedgehog shipping on all orders — demo flag{' '}

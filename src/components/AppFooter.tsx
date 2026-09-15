@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ExternalLink } from 'lucide-react'
 import { Separator } from '~/components/ui/separator'
+import { Logo } from '@posthog/brand/logo'
 
 const shopLinks = [
   { to: '/', label: 'Shop' },
@@ -26,9 +27,7 @@ export function AppFooter() {
               to="/"
               className="inline-flex items-center gap-2 font-semibold tracking-tight transition-opacity hover:opacity-80"
             >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xl text-primary-foreground">
-                🦔
-              </span>
+              <Logo.Logomark size={32} title="Quill & Co." />
               Quill & Co.
             </Link>
             <p className="max-w-xs text-sm text-muted-foreground">
