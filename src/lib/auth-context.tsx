@@ -258,6 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user_id: user?.id ?? null,
     })
     writeSession(null)
+    setUser(null)
     if (isPostHogReady(posthog)) {
       captureWhenReady(posthog, (client) => {
         client.capture('user_signed_out')
@@ -272,7 +273,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback(
     async (name: string) => {
-      if (!user) {
+      const session = readSession()
+      if (!user || !session || session.userId !== user.id) {
         return { error: 'You must be signed in to update your profile.' }
       }
 
