@@ -1,7 +1,7 @@
 import { Link, Navigate, createFileRoute, notFound } from '@tanstack/react-router'
 import { useFeatureFlagVariantKey, usePostHog } from '@posthog/react'
 import { useEffect, useRef, useState } from 'react'
-import { Minus, Plus, ShoppingCart } from 'lucide-react'
+import { ArrowRight, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { AppBreadcrumbs } from '~/components/AppBreadcrumbs'
 import { PageShell } from '~/components/PageShell'
 import { getProductPresentation, getProductSlug } from '~/components/ProductCard'
@@ -32,10 +32,16 @@ function ProductPage() {
     return <Navigate to="/products/$productId" params={{ productId: canonicalProductId }} replace />
   }
 
-  return <ProductDetails product={product} />
+  return <ProductDetails product={product} products={products} />
 }
 
-function ProductDetails({ product }: { product: Product }) {
+function ProductDetails({
+  product,
+  products,
+}: {
+  product: Product
+  products: Product[]
+}) {
   const posthog = usePostHog()
   const ctaVariant = useFeatureFlagVariantKey(DEMO_FLAGS.pdpCtaCopy)
   const friendlyCta = ctaVariant === PDP_CTA_VARIANTS.friendly
@@ -50,6 +56,14 @@ function ProductDetails({ product }: { product: Product }) {
       : 'Add to cart'
   const viewedRef = useRef<string | null>(null)
   const presentation = getProductPresentation(product)
+  const relatedProducts = products
+    .filter((candidate) => candidate.id !== product.id)
+    .sort((left, right) => {
+      const leftScore = Number(left.category === product.category)
+      const rightScore = Number(right.category === product.category)
+      return rightScore - leftScore
+    })
+    .slice(0, 6)
 
   useEffect(() => {
     if (viewedRef.current === product.id) return
@@ -71,6 +85,14 @@ function ProductDetails({ product }: { product: Product }) {
     })
     setAdded(true)
     window.setTimeout(() => setAdded(false), 2000)
+  }
+
+  function captureRelatedProductClick(relatedProduct: Product) {
+    posthog.capture('related_product_clicked', {
+      product_id: relatedProduct.id,
+      source_product_id: product.id,
+      placement: 'pdp_related_items',
+    })
   }
 
   return (
@@ -182,6 +204,57 @@ function ProductDetails({ product }: { product: Product }) {
           </div>
         </div>
       </div>
+
+      {relatedProducts.length > 0 ? (
+        <section className="mt-16 border-t pt-10">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium text-primary">Keep exploring</p>
+              <h2 className="text-2xl font-semibold tracking-tight">You may also like</h2>
+            </div>
+            <p className="hidden text-sm text-muted-foreground sm:block">Scroll to see more</p>
+          </div>
+          <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0">
+            {relatedProducts.map((relatedProduct) => {
+              const relatedPresentation = getProductPresentation(relatedProduct)
+
+              return (
+                <article
+                  key={relatedProduct.id}
+                  className="w-64 shrink-0 snap-start overflow-hidden rounded-2xl border bg-card shadow-sm"
+                >
+                  <div className={`relative flex aspect-[4/3] items-center justify-center bg-gradient-to-br p-4 ${relatedPresentation.theme}`}>
+                    <img
+                      src={relatedPresentation.hoggie}
+                      alt=""
+                      className="size-28 object-contain drop-shadow-[0_10px_10px_rgba(29,31,39,0.18)]"
+                    />
+                    <span className="absolute right-3 bottom-3 rounded-full bg-background px-2.5 py-1 text-sm font-semibold text-foreground shadow-sm">
+                      {formatPrice(relatedProduct.price)}
+                    </span>
+                  </div>
+                  <div className="space-y-3 p-4">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">{relatedProduct.category}</p>
+                      <h3 className="font-semibold">{relatedPresentation.title}</h3>
+                    </div>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link
+                        to="/products/$productId"
+                        params={{ productId: getProductSlug(relatedProduct) }}
+                        onClick={() => captureRelatedProductClick(relatedProduct)}
+                      >
+                        View item
+                        <ArrowRight className="size-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        </section>
+      ) : null}
     </PageShell>
   )
 }
