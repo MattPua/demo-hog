@@ -97,7 +97,7 @@ export const Route = createFileRoute('/api/checkout')({
             },
           })
 
-          return Response.json({ orderId, success: true })
+          return Response.json({ order_id: orderId, success: true })
         } catch (error) {
           errorStoreContext('checkout-api', 'Checkout request failed', {
             distinct_id: distinctId,
