@@ -29,10 +29,7 @@ export function getPostHogClientOptions(): Partial<PostHogConfig> {
     capture_exceptions: true,
     disable_session_recording: false,
     session_recording: {
-      maskAllInputs: false,
-      maskInputOptions: {
-        password: true,
-      },
+      maskAllInputs: true,
     },
     debug: import.meta.env.DEV,
     on_request_error: (response) => {
