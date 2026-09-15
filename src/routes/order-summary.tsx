@@ -266,7 +266,7 @@ function OrderSummaryPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="h-10 w-full rounded-lg border border-input bg-muted/70 px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:bg-background focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="h-10 w-full rounded-lg border-2 border-input bg-card px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
           <p className="text-xs text-muted-foreground">
             <Link to="/sign-in" className="font-medium text-primary hover:underline">
